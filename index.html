@@ -8,6 +8,34 @@
 </head>
 <body>
     <div id="game-container">
+        <!-- Barra Superior (Registradores) -->
+        <div id="registers-container">
+            <div class="register" id="reg-r0">
+                <div class="tag">R0</div>
+                <div class="register-label">R0</div>
+                <div id="grid-r0"></div>
+            </div>
+        </div>
+
+        <!-- Acumuladores A e B, e Pilha P no centro -->
+        <div id="accumulators-container">
+            <div id="acc-group">
+                <div class="accumulator accumulator-a" id="acc-a">
+                    <div class="tag">A</div>
+                    A
+                </div>
+                <div class="accumulator accumulator-b" id="acc-b">
+                    <div class="tag">B</div>
+                    B
+                </div>
+            </div>
+            <div class="accumulator accumulator-p" id="acc-p">
+                <div class="tag">P</div>
+                P
+            </div>
+        </div>
+        
+        <!-- Barra inferior de cartas -->
         <div id="cards-container">
             <!-- Cards múltiplos gerados via script.js -->
         </div>
