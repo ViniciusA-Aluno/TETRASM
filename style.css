@@ -122,6 +122,7 @@ body {
     gap: calc(var(--block-container-size) * 0.09375);
     box-shadow: 0 calc(var(--block-container-size) * 0.03125) calc(var(--block-container-size) * 0.1171875) rgba(0, 0, 0, 0.5);
     width: fit-content;
+    transition: padding 0.3s ease;
 }
 
 /* Grid 4x4 */
@@ -185,19 +186,17 @@ body {
     font-weight: bold;
     user-select: none;
     position: relative;
-    transition: all 0.3s ease;
+    transition: padding 0.3s ease, width 0.3s ease, height 0.3s ease;
 }
 
-/* Acumulador A (Vermelho, com letra A ofuscada) */
+/* Acumulador A (Vermelho) */
 .accumulator.accumulator-a {
     border: calc(var(--block-container-size) * 0.0625) solid #ff3333;
-    color: rgba(255, 51, 51, 0.3);
 }
 
-/* Acumulador B (Azul, com letra B ofuscada) */
+/* Acumulador B (Azul) */
 .accumulator.accumulator-b {
     border: calc(var(--block-container-size) * 0.0625) solid #3333ff;
-    color: rgba(51, 51, 255, 0.3);
 }
 
 /* Acumulador P (Pilha - Verde, sem fundo, sem borda esquerda e sem sombra) */
@@ -207,8 +206,51 @@ body {
     border-left: none;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
-    color: rgba(51, 255, 51, 0.3);
     box-shadow: none;
+}
+
+/* Rótulos dos Acumuladores no fundo */
+.accumulator-label {
+    position: absolute;
+    font-size: calc(var(--block-container-size) * 0.75);
+    font-weight: bold;
+    z-index: 1;
+    pointer-events: none;
+    user-select: none;
+}
+
+.accumulator-a .accumulator-label {
+    color: rgba(255, 51, 51, 0.15);
+}
+
+.accumulator-b .accumulator-label {
+    color: rgba(51, 51, 255, 0.15);
+}
+
+.accumulator-p .accumulator-label {
+    color: rgba(51, 255, 51, 0.15);
+}
+
+/* Garante que o grid dos acumuladores fique em cima do rótulo */
+.accumulator .piece-grid {
+    position: relative;
+    z-index: 2;
+}
+
+.stack-counter {
+    position: absolute;
+    bottom: 5px;
+    right: 8px;
+    background-color: #14a714;
+    color: #ffffff;
+    font-size: calc(var(--block-container-size) * 0.12);
+    font-weight: bold;
+    font-family: monospace;
+    padding: 2px 6px;
+    border-radius: 4px;
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 /* Célula preenchida com estilo cinza de ferro/pedra */
@@ -248,6 +290,7 @@ body {
     align-items: center;
     position: relative;
     user-select: none;
+    transition: padding 0.3s ease, width 0.3s ease, height 0.3s ease;
 }
 
 /* Rótulo do Registrador (letra "R0" grande e no fundo) */
@@ -451,7 +494,8 @@ body {
 /* A textarea de escrita de código */
 .notebook-textarea {
     width: 100%;
-    height: 100%;
+    flex-grow: 1;
+    height: auto;
     background-color: #FFF8DC;
     /* Margem clássica de caderno (linha vermelha) e as pautas pretas/cinza claras */
     background-image: 
@@ -471,6 +515,86 @@ body {
     padding: 18px 15px 18px 55px; /* Deixa margem para o arame e a linha vermelha */
     box-sizing: border-box;
     overflow-y: auto;
+}
+
+/* ==========================================================================
+   CONTROLES DO CADERNO E DESTAQUE DE LINHA (PLAY, STEP, STATUS E MARCA-TEXTO)
+   ========================================================================== */
+
+.notebook-line-highlight {
+    position: absolute;
+    left: 55px;
+    right: 15px;
+    height: 24px;
+    background-color: rgba(255, 235, 59, 0.35); /* Amarelo caneta marca-texto escolar */
+    pointer-events: none;
+    z-index: 100; /* mix-blend-mode joga para trás do texto no renderizador */
+    mix-blend-mode: multiply;
+    display: none;
+    border-radius: 2px;
+    transition: top 0.1s ease-out; /* Suaviza a descida do marca-texto! */
+}
+
+/* Ajusta o flex do window-body do caderno para comportar o rodapé */
+#notebook-panel .window-body.notebook-paper {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Barra de controles no rodapé do caderno */
+.notebook-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 15px;
+    background-color: #E6D8B0; /* Tom ligeiramente mais escuro que o papel para dar profundidade */
+    border-top: 3px solid #111;
+    z-index: 15;
+}
+
+.notebook-btn {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 13px;
+    font-weight: bold;
+    padding: 6px 12px;
+    background-color: #FFF8DC;
+    border: 2px solid #111;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 2px 2px 0px #111;
+    transition: all 0.1s ease;
+}
+
+.notebook-btn:hover {
+    background-color: #FFF;
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0px #111;
+}
+
+.notebook-btn:active {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0px #111;
+}
+
+.notebook-status {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 15px;
+    font-weight: bold;
+    color: #FFF;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-left: 8px;
+    background-color: #1A1A1A;
+    z-index: 15;
+}
+
+.notebook-status.error {
+    color: #e60000;
+}
+
+.notebook-status.success {
+    color: #00de00;
 }
 
 /* Visualizador de Snapping do Dock */

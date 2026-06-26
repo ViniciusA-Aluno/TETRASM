@@ -14,7 +14,7 @@
                 <div class="register" id="reg-r0">
                     <div class="tag">R0</div>
                     <div class="register-label">R0</div>
-                    <div id="grid-r0"></div>
+                    <div id="grid-r0" class="piece-grid"></div>
                 </div>
             </div>
 
@@ -23,16 +23,19 @@
                 <div id="acc-group">
                     <div class="accumulator accumulator-a" id="acc-a">
                         <div class="tag">A</div>
-                        A
+                        <div class="accumulator-label">A</div>
+                        <div id="grid-a" class="piece-grid"></div>
                     </div>
                     <div class="accumulator accumulator-b" id="acc-b">
                         <div class="tag">B</div>
-                        B
+                        <div class="accumulator-label">B</div>
+                        <div id="grid-b" class="piece-grid"></div>
                     </div>
                 </div>
                 <div class="accumulator accumulator-p" id="acc-p">
                     <div class="tag">P</div>
-                    P
+                    <div class="accumulator-label">P</div>
+                    <div id="grid-p" class="piece-grid"></div>
                 </div>
             </div>
             
@@ -53,7 +56,14 @@
                 </div>
             </div>
             <div class="window-body notebook-paper">
-                <textarea id="notebook-input" class="notebook-textarea" placeholder="Digite comandos de Assembly aqui...&#10;&#10;Exemplo:&#10;MOV A, C0&#10;ADD A, B&#10;PUSH A"></textarea>
+                <div id="line-highlight" class="notebook-line-highlight"></div>
+                <textarea id="notebook-input" class="notebook-textarea" placeholder="Digite comandos de Assembly aqui...&#10;&#10;Exemplo:&#10;MOV A, C0&#10;MOV B, C1&#10;MOV R0, A"></textarea>
+                <div id="notebook-status" class="notebook-status">Pronto</div>
+                <div class="notebook-controls">
+                    <button id="btn-run" class="notebook-btn" title="Executar todo o código">▶ Executar</button>
+                    <button id="btn-step" class="notebook-btn" title="Executar linha por linha">⏭ Passo</button>
+                    <button id="btn-reset" class="notebook-btn" title="Resetar tabuleiro e acumuladores">↺ Resetar</button>
+                </div>
             </div>
         </div>
 
