@@ -10,17 +10,28 @@
 }
 
 body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+#app-layout {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
     background-image: url('TetrasmBG.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow-y: auto;
-    font-family: Arial, sans-serif;
-    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: padding 0.3s ease;
 }
 
 #game-container {
@@ -31,6 +42,60 @@ body {
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
+    transition: width 0.3s ease, max-width 0.3s ease, margin 0.3s ease;
+}
+
+/* Redução proporcional de UI do jogo quando acoplado à esquerda ou à direita */
+#app-layout.docked-left,
+#app-layout.docked-right {
+    --block-container-size: 84px; /* Encolhe proporcionalmente os blocos de 96px para 84px */
+    --block-size: calc(var(--block-container-size) / var(--grid-size));
+}
+
+#app-layout.docked-left {
+    flex-direction: row;
+    padding-left: 10px;
+}
+
+#app-layout.docked-left #notebook-panel {
+    position: relative;
+    left: 0;
+    top: 0;
+    transform: none;
+    height: 100%;
+    width: 380px;
+    margin-right: 20px;
+    order: -1;
+    box-shadow: 5px 0 15px rgba(0, 0, 0, 0.4);
+}
+
+#app-layout.docked-left #game-container {
+    width: calc(100% - 400px);
+    max-width: none;
+    margin: 0;
+}
+
+#app-layout.docked-right {
+    flex-direction: row;
+    padding-right: 10px;
+}
+
+#app-layout.docked-right #notebook-panel {
+    position: relative;
+    left: 0;
+    top: 0;
+    transform: none;
+    height: 100%;
+    width: 380px;
+    margin-left: 20px;
+    order: 1;
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.4);
+}
+
+#app-layout.docked-right #game-container {
+    width: calc(100% - 400px);
+    max-width: none;
+    margin: 0;
 }
 
 /* Container para múltiplos cards (Barra inferior invisível) */
@@ -247,4 +312,190 @@ body {
 .card .tag {
     border-color: #000000;
     color: #aaaaaa;
+}
+
+/* ==========================================================================
+   PAINEL DO CADERNO (WINDOW HEADER, PAPEL DE CADERNO E CONTROLES)
+   ========================================================================== */
+
+#notebook-panel {
+    position: absolute;
+    width: 380px;
+    height: 480px;
+    min-width: 280px;
+    min-height: 350px;
+    background-color: #FFF8DC;
+    border: 3px solid #111;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    overflow: hidden;
+    transition: box-shadow 0.2s ease, width 0.3s ease, height 0.3s ease;
+}
+
+#notebook-panel.is-dragging {
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
+    cursor: grabbing;
+    transition: none; /* Desativa transições durante o arraste */
+}
+
+/* Barra de título do Caderno */
+.window-header {
+    background-color: #1a1a1a;
+    color: #f1f1f1;
+    padding: 10px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+    border-bottom: 3px solid #111;
+    font-family: monospace;
+    font-weight: bold;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+
+    &.undocked {
+        cursor: grab;
+    }
+}
+
+.window-header:active {
+    cursor: grabbing;
+}
+
+.window-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.window-controls {
+    display: flex;
+    gap: 6px;
+}
+
+.win-btn {
+    background: #2b2b2b;
+    border: 1px solid #444;
+    color: #ccc;
+    border-radius: 4px;
+    width: 28px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 11px;
+    transition: all 0.2s ease;
+}
+
+.win-btn:hover {
+    background: #555;
+    color: #fff;
+    border-color: #666;
+}
+
+.win-btn:active {
+    background: #111;
+}
+
+/* Papel do caderno com as pautas e espiral visual */
+.window-body.notebook-paper {
+    flex-grow: 1;
+    background-color: #FFF8DC;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+}
+
+/* Folhas com espiral clássica de arame metalizado à esquerda */
+.notebook-paper::before {
+    content: "";
+    position: absolute;
+    left: 0px;
+    top: 8px;
+    bottom: 0;
+    width: 16px;
+    /* Argolas prateadas */
+    background-image: linear-gradient(to bottom, 
+        transparent 5px, 
+        #d0d0d0 5px, 
+        #888888 8px, 
+        #333333 11px, 
+        transparent 11px);
+    background-size: 100% 24px;
+    z-index: 10;
+    pointer-events: none;
+}
+
+/* Furos do espiral no papel */
+.notebook-paper::after {
+    content: "";
+    position: absolute;
+    left: 12px;
+    top: 0;
+    bottom: 0;
+    width: 8px;
+    background-image: radial-gradient(circle, #2e2820 35%, transparent 45%);
+    background-size: 8px 24px;
+    background-position: 0 5px;
+    z-index: 9;
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+/* A textarea de escrita de código */
+.notebook-textarea {
+    width: 100%;
+    height: 100%;
+    background-color: #FFF8DC;
+    /* Margem clássica de caderno (linha vermelha) e as pautas pretas/cinza claras */
+    background-image: 
+        linear-gradient(90deg, transparent 44px, rgba(230, 90, 90, 0.4) 1px, rgba(230, 90, 90, 0.4) 2px, transparent 47px),
+        linear-gradient(rgba(0, 0, 0, 0.12) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 24px;
+    background-position: 0 0, 0 18px;
+    background-attachment: local;
+    border: none;
+    outline: none;
+    resize: none;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 16px;
+    line-height: 24px;
+    color: #111;
+    font-weight: bold;
+    padding: 18px 15px 18px 55px; /* Deixa margem para o arame e a linha vermelha */
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+/* Visualizador de Snapping do Dock */
+#dock-preview {
+    position: absolute;
+    top: 20px;
+    bottom: 20px;
+    width: 380px;
+    background-color: rgba(255, 248, 220, 0.12); /* Cor de caderno bem sutil */
+    border: 2px dashed rgba(255, 248, 220, 0.35);
+    border-radius: 8px;
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0;
+    transition: left 0.2s ease, right 0.2s ease;
+}
+
+#dock-preview.show-left {
+    opacity: 1;
+    left: 20px;
+    right: auto;
+}
+
+#dock-preview.show-right {
+    opacity: 1;
+    right: 20px;
+    left: auto;
 }

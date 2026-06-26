@@ -7,38 +7,58 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="game-container">
-        <!-- Barra Superior (Registradores) -->
-        <div id="registers-container">
-            <div class="register" id="reg-r0">
-                <div class="tag">R0</div>
-                <div class="register-label">R0</div>
-                <div id="grid-r0"></div>
+    <div id="app-layout">
+        <div id="game-container">
+            <!-- Barra Superior (Registradores) -->
+            <div id="registers-container">
+                <div class="register" id="reg-r0">
+                    <div class="tag">R0</div>
+                    <div class="register-label">R0</div>
+                    <div id="grid-r0"></div>
+                </div>
+            </div>
+
+            <!-- Acumuladores A e B, e Pilha P no centro -->
+            <div id="accumulators-container">
+                <div id="acc-group">
+                    <div class="accumulator accumulator-a" id="acc-a">
+                        <div class="tag">A</div>
+                        A
+                    </div>
+                    <div class="accumulator accumulator-b" id="acc-b">
+                        <div class="tag">B</div>
+                        B
+                    </div>
+                </div>
+                <div class="accumulator accumulator-p" id="acc-p">
+                    <div class="tag">P</div>
+                    P
+                </div>
+            </div>
+            
+            <!-- Barra inferior de cartas -->
+            <div id="cards-container">
+                <!-- Cards múltiplos gerados via script.js -->
             </div>
         </div>
 
-        <!-- Acumuladores A e B, e Pilha P no centro -->
-        <div id="accumulators-container">
-            <div id="acc-group">
-                <div class="accumulator accumulator-a" id="acc-a">
-                    <div class="tag">A</div>
-                    A
-                </div>
-                <div class="accumulator accumulator-b" id="acc-b">
-                    <div class="tag">B</div>
-                    B
+        <!-- Painel do Caderno de Comandos -->
+        <div id="notebook-panel">
+            <div class="window-header undocked" id="notebook-header">
+                <div class="window-title">Caderno de Comandos</div>
+                <div class="window-controls">
+                    <button class="win-btn" id="btn-dock-left" title="Acoplar à Esquerda"><</button>
+                    <button class="win-btn" id="btn-float" title="Tornar Flutuante" style="display: none;">🗔</button>
+                    <button class="win-btn" id="btn-dock-right" title="Acoplar à Direita">></button>
                 </div>
             </div>
-            <div class="accumulator accumulator-p" id="acc-p">
-                <div class="tag">P</div>
-                P
+            <div class="window-body notebook-paper">
+                <textarea id="notebook-input" class="notebook-textarea" placeholder="Digite comandos de Assembly aqui...&#10;&#10;Exemplo:&#10;MOV A, C0&#10;ADD A, B&#10;PUSH A"></textarea>
             </div>
         </div>
-        
-        <!-- Barra inferior de cartas -->
-        <div id="cards-container">
-            <!-- Cards múltiplos gerados via script.js -->
-        </div>
+
+        <!-- Elemento de feedback visual para o Snapping -->
+        <div id="dock-preview"></div>
     </div>
     <script src="script.js"></script>
 </body>
