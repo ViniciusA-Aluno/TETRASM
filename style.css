@@ -45,12 +45,6 @@ body {
     transition: width 0.3s ease, max-width 0.3s ease, margin 0.3s ease;
 }
 
-/* Redução proporcional de UI do jogo quando acoplado à esquerda ou à direita */
-#app-layout.docked-left,
-#app-layout.docked-right {
-    --block-container-size: 84px; /* Encolhe proporcionalmente os blocos de 96px para 84px */
-    --block-size: calc(var(--block-container-size) / var(--grid-size));
-}
 
 #app-layout.docked-left {
     flex-direction: row;
@@ -125,7 +119,6 @@ body {
     transition: padding 0.3s ease;
 }
 
-/* Grid 4x4 */
 .piece-grid {
     display: grid;
     grid-template-columns: repeat(var(--grid-size), var(--block-size));
@@ -622,4 +615,122 @@ body {
     opacity: 1;
     right: 20px;
     left: auto;
+}
+
+/* Modificadores para a peça Alvo e Célula Dourada */
+.register.target-register {
+    border: calc(var(--block-container-size) * 0.0625) solid #ffd700; /* Dourado */
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.4), inset 0 0 15px rgba(255, 215, 0, 0.2);
+}
+.register.target-register .tag {
+    border-color: #ffd700;
+    color: #ffd700;
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+}
+.register.target-register .register-label {
+    color: rgba(255, 215, 0, 0.1);
+}
+
+.cell.filled.gold {
+    background-color: #ffd700;
+    border-style: solid;
+    border-width: calc(var(--block-size) * 0.1875);
+    border-top-color: #fff3a8;
+    border-left-color: #fff3a8;
+    border-right-color: #b8860b;
+    border-bottom-color: #b8860b;
+    box-sizing: border-box;
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+}
+
+/* Modal de Vitória */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(8px);
+}
+
+.modal-content {
+    background-color: rgba(20, 20, 20, 0.95);
+    border: 3px solid #ffd700;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 450px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.5), inset 0 0 15px rgba(255, 215, 0, 0.2);
+    font-family: 'Courier New', Courier, monospace;
+    color: #f1f1f1;
+    transform: scale(0.7);
+    opacity: 0;
+    animation: modalAppear 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes modalAppear {
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.modal-header h2 {
+    color: #ffd700;
+    font-size: 22px;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+    text-transform: uppercase;
+}
+
+.modal-body {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.modal-congrats {
+    font-size: 20px;
+    font-weight: bold;
+    color: #00ff00;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+    margin-bottom: 15px;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: center;
+}
+
+.modal-btn {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 15px;
+    font-weight: bold;
+    color: #111;
+    background-color: #ffd700;
+    border: 2px solid #000;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 3px 3px 0 #000;
+    transition: all 0.2s ease;
+}
+
+.modal-btn:hover {
+    background-color: #fff;
+    border-color: #000;
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0 #000;
+}
+
+.modal-btn:active {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0 #000;
 }

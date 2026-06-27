@@ -8,10 +8,13 @@ function initGame() {
     for (let i = 0; i < NUM_CARDS; i++) {
         gameState.cards[i] = generateRandomMatrix(i + 1);
     }
-    gameState.regR0 = generateRandomMatrix(5);
+    gameState.regR0 = null;
     gameState.accA = null;
     gameState.accB = null;
     gameState.stackP = [];
+    gameState.hasWon = false;
+    
+    gameState.target = generateSolvableTarget();
     
     saveInitialState();
     renderGame();
@@ -43,7 +46,7 @@ function stepExecution() {
     }
 
     if (currentInstructionIndex === 0 && !isExecutionRunning) {
-        saveInitialState();
+        restoreInitialState();
         isExecutionRunning = true;
     }
 
@@ -59,12 +62,17 @@ function stepExecution() {
                 updateHighlightPosition(currentInstructionIndex);
                 scrollToLine(currentInstructionIndex);
                 
-                if (parsed.op === 'MOV') {
-                    executeMov(parsed.dest, parsed.src);
-                }
+                executeInstruction(parsed);
                 
                 renderGame();
                 updateStatus(`Linha ${currentInstructionIndex + 1}: ${parsed.originalText}`, "success");
+                
+                if (gameState.hasWon) {
+                    updateStatus("🎉 PARABÉNS! Você construiu a peça alvo com sucesso!", "success");
+                    showVictoryCelebration();
+                    stopExecution(true);
+                    return;
+                }
                 
                 currentInstructionIndex++;
                 executed = true;
@@ -121,15 +129,21 @@ function toggleRun() {
 
 function resetExecution() {
     stopExecution();
-    
-    const isStateModified = JSON.stringify(gameState) !== JSON.stringify(savedGameState);
-    
-    if (isStateModified) {
-        restoreInitialState();
-        updateStatus("Estado resetado", "success");
-    } else {
-        initGame();
-        updateStatus("Novas peças geradas", "success");
+    restoreInitialState();
+    renderGame();
+    updateStatus("Nível reiniciado", "success");
+}
+
+function newTargetExecution() {
+    stopExecution();
+    initGame();
+    updateStatus("Novo alvo e peças geradas", "success");
+}
+
+function showVictoryCelebration() {
+    const modal = document.getElementById('victory-modal');
+    if (modal) {
+        modal.style.display = 'flex';
     }
 }
 
@@ -137,11 +151,24 @@ function setupNotebookEvents() {
     const btnRun = document.getElementById('btn-run');
     const btnStep = document.getElementById('btn-step');
     const btnReset = document.getElementById('btn-reset');
+    const btnNextLevel = document.getElementById('btn-next-level');
     const textarea = document.getElementById('notebook-input');
 
     if (btnRun) btnRun.addEventListener('click', toggleRun);
     if (btnStep) btnStep.addEventListener('click', stepExecution);
     if (btnReset) btnReset.addEventListener('click', resetExecution);
+    
+    const btnNewTarget = document.getElementById('btn-new-target');
+    if (btnNewTarget) btnNewTarget.addEventListener('click', newTargetExecution);
+    
+    if (btnNextLevel) {
+        btnNextLevel.addEventListener('click', () => {
+            const modal = document.getElementById('victory-modal');
+            if (modal) modal.style.display = 'none';
+            initGame();
+            updateStatus("Próxima fase iniciada!");
+        });
+    }
     
     if (textarea) {
         textarea.addEventListener('scroll', () => {

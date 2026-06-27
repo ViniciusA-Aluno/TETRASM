@@ -11,6 +11,11 @@
         <div id="game-container">
             <!-- Barra Superior (Registradores) -->
             <div id="registers-container">
+                <div class="register target-register" id="reg-target">
+                    <div class="tag">ALVO</div>
+                    <div class="register-label"></div>
+                    <div id="grid-target" class="piece-grid"></div>
+                </div>
                 <div class="register" id="reg-r0">
                     <div class="tag">R0</div>
                     <div class="register-label">R0</div>
@@ -62,7 +67,8 @@
                 <div class="notebook-controls">
                     <button id="btn-run" class="notebook-btn" title="Executar todo o código">▶ Executar</button>
                     <button id="btn-step" class="notebook-btn" title="Executar linha por linha">⏭ Passo</button>
-                    <button id="btn-reset" class="notebook-btn" title="Resetar tabuleiro e acumuladores">↺ Resetar</button>
+                    <button id="btn-reset" class="notebook-btn" title="Reiniciar nível atual">↺ Resetar</button>
+                    <button id="btn-new-target" class="notebook-btn" title="Gerar novas peças e alvo">🎲 Novo Alvo</button>
                 </div>
             </div>
         </div>
@@ -70,6 +76,24 @@
         <!-- Elemento de feedback visual para o Snapping -->
         <div id="dock-preview"></div>
     </div>
+
+    <!-- Modal de Vitória -->
+    <div id="victory-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>SISTEMA DECORADO</h2>
+            </div>
+            <div class="modal-body">
+                <p class="modal-congrats">🎉 PARABÉNS, OPERADOR! 🎉</p>
+                <p>A peça compilada em <strong>R0</strong> corresponde exatamente à especificação de entrada do <strong>ALVO</strong>.</p>
+                <p>Seus comandos assembly integraram a estrutura com sucesso.</p>
+            </div>
+            <div class="modal-footer">
+                <button id="btn-next-level" class="modal-btn">Próxima Peça (Novo Jogo)</button>
+            </div>
+        </div>
+    </div>
+
     <script src="game.js"></script>
     <script src="ui.js"></script>
     <script src="docking.js"></script>

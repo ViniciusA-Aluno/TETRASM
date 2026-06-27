@@ -3,6 +3,7 @@ const cardsContainer = document.getElementById('cards-container');
 
 function renderGrid(container, matrix) {
     if (!container) return;
+    container.classList.add('piece-grid');
     container.innerHTML = '';
     
     for (let r = 0; r < GRID_SIZE; r++) {
@@ -15,6 +16,8 @@ function renderGrid(container, matrix) {
                 cell.classList.add('filled');
                 if (val === 5) {
                     cell.classList.add('gray');
+                } else if (val === 6) {
+                    cell.classList.add('gold');
                 } else {
                     const hue = ((val - 1) * 45) % 360;
                     cell.style.filter = `hue-rotate(${hue}deg)`;
@@ -77,6 +80,7 @@ function renderGame() {
     renderGrid(document.getElementById('grid-a'), gameState.accA);
     renderGrid(document.getElementById('grid-b'), gameState.accB);
     renderGrid(document.getElementById('grid-r0'), gameState.regR0);
+    renderGrid(document.getElementById('grid-target'), gameState.target);
     renderStack();
 }
 
