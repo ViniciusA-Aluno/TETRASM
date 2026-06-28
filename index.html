@@ -52,13 +52,9 @@
 
         <!-- Painel do Caderno de Comandos -->
         <div id="notebook-panel">
-            <div class="window-header undocked" id="notebook-header">
-                <div class="window-title">Caderno de Comandos</div>
-                <div class="window-controls">
-                    <button class="win-btn" id="btn-dock-left" title="Acoplar à Esquerda"><</button>
-                    <button class="win-btn" id="btn-float" title="Tornar Flutuante" style="display: none;">🗔</button>
-                    <button class="win-btn" id="btn-dock-right" title="Acoplar à Direita">></button>
-                </div>
+            <div class="window-header" id="notebook-header">
+                <h4>Caderno de Comandos</h4>
+                <button id="btn-toggle-side" class="win-btn" title="Mover para Esquerda">&lt;</button>
             </div>
             <div class="window-body notebook-paper">
                 <div id="line-highlight" class="notebook-line-highlight"></div>
@@ -72,9 +68,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Elemento de feedback visual para o Snapping -->
-        <div id="dock-preview"></div>
     </div>
 
     <!-- Modal de Vitória -->
@@ -96,6 +89,8 @@
 
     <script src="game.js"></script>
     <script src="ui.js"></script>
+    <script src="sound.js"></script>
+    <script src="animation.js"></script>
     <script src="docking.js"></script>
     <script src="script.js"></script>
 </body>

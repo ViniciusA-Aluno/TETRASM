@@ -25,6 +25,9 @@ function stopExecution(completed = true) {
     currentInstructionIndex = 0;
     
     setHighlightVisible(false);
+    if (typeof clearActiveAnimations === 'function') {
+        clearActiveAnimations();
+    }
     
     const runBtn = document.getElementById('btn-run');
     if (runBtn) runBtn.textContent = '▶ Executar';
@@ -35,7 +38,7 @@ function stopExecution(completed = true) {
     }
 }
 
-function stepExecution() {
+async function stepExecution() {
     const textarea = document.getElementById('notebook-input');
     if (!textarea) return;
     
@@ -62,12 +65,35 @@ function stepExecution() {
                 updateHighlightPosition(currentInstructionIndex);
                 scrollToLine(currentInstructionIndex);
                 
-                executeInstruction(parsed);
+                // Animação de transladação ou efeito baseada no comando
+                if (typeof animatePieceMove === 'function') {
+                    if (['MOV', 'AND', 'OR', 'XOR'].includes(parsed.op)) {
+                        const matrixToMove = getMatrixForName(parsed.src);
+                        await animatePieceMove(parsed.src, parsed.dest, matrixToMove);
+                    } else if (parsed.op === 'PUSH') {
+                        const matrixToMove = getMatrixForName(parsed.src);
+                        await animatePieceMove(parsed.src, 'P', matrixToMove);
+                    } else if (parsed.op === 'POP') {
+                        const topMatrix = gameState.stackP.length > 0 ? gameState.stackP[gameState.stackP.length - 1] : null;
+                        await animatePieceMove('P', parsed.dest, topMatrix);
+                    } else if (parsed.op === 'NOT') {
+                        if (typeof animateNot === 'function') {
+                            await animateNot(parsed.dest);
+                        }
+                    }
+                }
+
+                // Se a execução foi parada ou reiniciada durante a animação
+                if (!isExecutionRunning && currentInstructionIndex === 0) {
+                    return;
+                }
                 
+                executeInstruction(parsed);
                 renderGame();
                 updateStatus(`Linha ${currentInstructionIndex + 1}: ${parsed.originalText}`, "success");
                 
                 if (gameState.hasWon) {
+                    if (window.soundManager) window.soundManager.play('win');
                     updateStatus("🎉 PARABÉNS! Você construiu a peça alvo com sucesso!", "success");
                     showVictoryCelebration();
                     stopExecution(true);
@@ -84,6 +110,7 @@ function stepExecution() {
             updateHighlightPosition(currentInstructionIndex);
             scrollToLine(currentInstructionIndex);
             
+            if (window.soundManager) window.soundManager.play('error');
             updateStatus(`Erro na Linha ${currentInstructionIndex + 1}: ${err.message}`, "error");
             stopExecution(false);
             return;
@@ -96,13 +123,13 @@ function stepExecution() {
     }
 }
 
-function runNextStepAuto() {
+async function runNextStepAuto() {
     if (!isExecutionRunning) return;
     
-    stepExecution();
+    await stepExecution();
     
     if (isExecutionRunning && currentInstructionIndex < linesOfCode.length) {
-        executionTimeoutId = setTimeout(runNextStepAuto, 300);
+        executionTimeoutId = setTimeout(runNextStepAuto, 150);
     } else if (isExecutionRunning) {
         stopExecution(true);
     }
@@ -131,12 +158,14 @@ function resetExecution() {
     stopExecution();
     restoreInitialState();
     renderGame();
+    if (window.soundManager) window.soundManager.play('newgame');
     updateStatus("Nível reiniciado", "success");
 }
 
 function newTargetExecution() {
     stopExecution();
     initGame();
+    if (window.soundManager) window.soundManager.play('newgame');
     updateStatus("Novo alvo e peças geradas", "success");
 }
 
@@ -166,6 +195,7 @@ function setupNotebookEvents() {
             const modal = document.getElementById('victory-modal');
             if (modal) modal.style.display = 'none';
             initGame();
+            if (window.soundManager) window.soundManager.play('newgame');
             updateStatus("Próxima fase iniciada!");
         });
     }

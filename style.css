@@ -24,6 +24,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 20px;
     padding: 20px;
     background-image: linear-gradient(90deg, black, #555);
     background-size: cover;
@@ -35,7 +36,7 @@ body {
 }
 
 #game-container {
-    width: 100%;
+    width: calc(100% - 400px);
     max-width: 900px;
     height: 100%;
     display: flex;
@@ -44,7 +45,7 @@ body {
     align-items: center;
     transition: width 0.3s ease, max-width 0.3s ease, margin 0.3s ease;
 
-    /* Tv */
+    /* TV */
     position: relative;
     padding: 25px;
     border-top: solid 40px #1c1c1c;
@@ -52,9 +53,9 @@ body {
     border-bottom: solid 40px #393535;
     border-left: solid 40px #292525;
     border-radius: 6px;
-    box-shadow: 0 0 0 40px #d5d5bc, inset 0 0 15px 15px black;
+    box-shadow: 0 0 0 40px #d5d5bc, 0 70px 0 40px #85856c, inset 0 0 15px 15px black;
     box-sizing: border-box;
-    background-image: url(TetrasmBG-curved.png);
+    background-image: url(assets/images/TetrasmBG-curved.png);
     background-size: 100% 100%;
     perspective: 350px;
     scale: 0.9;
@@ -72,51 +73,6 @@ body {
     box-sizing: border-box;
 }
 
-#app-layout.docked-left {
-    flex-direction: row;
-    padding-left: 10px;
-}
-
-#app-layout.docked-left #notebook-panel {
-    position: relative;
-    left: 0;
-    top: 0;
-    transform: none;
-    height: 100%;
-    width: 380px;
-    margin-right: 20px;
-    order: -1;
-    box-shadow: 5px 0 15px rgba(0, 0, 0, 0.4);
-}
-
-#app-layout.docked-left #game-container {
-    width: calc(100% - 400px);
-    margin: 0;
-}
-
-#app-layout.docked-right {
-    flex-direction: row;
-    padding-right: 10px;
-}
-
-#app-layout.docked-right #notebook-panel {
-    position: relative;
-    left: 0;
-    top: 0;
-    transform: none;
-    height: 100%;
-    width: 380px;
-    margin-left: 20px;
-    order: 1;
-    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.4);
-}
-
-#app-layout.docked-right #game-container {
-    width: calc(100% - 400px);
-    margin: 0;
-}
-
-/* Container para múltiplos cards (Barra inferior invisível) */
 #cards-container {
     display: flex;
     justify-content: center;
@@ -131,7 +87,7 @@ body {
 .card {
     position: relative;
     background-color: rgba(60, 60, 150, 1);
-    border: calc(var(--block-container-size) * 0.0625) solid #000;
+    border: calc(var(--block-container-size) * 0.0625) solid #111;
     border-radius: calc(var(--block-container-size) * 0.0625);
     padding: calc(var(--block-container-size) * 0.46875) calc(var(--block-container-size) * 0.1875);
     display: flex;
@@ -141,6 +97,11 @@ body {
     box-shadow: 0 calc(var(--block-container-size) * 0.03125) calc(var(--block-container-size) * 0.1171875) rgba(0, 0, 0, 0.5);
     width: fit-content;
     transition: padding 0.3s ease;
+
+    & .tag {
+        border-color: #000000;
+        color: #aaaaaa;
+    }
 }
 
 .piece-grid {
@@ -152,7 +113,14 @@ body {
     border-radius: calc(var(--block-size) * 0.125);
 }
 
-/* Célula individual */
+.floating-piece-grid {
+    background-color: rgba(20, 20, 35, 0.9);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: calc(var(--block-size) * 0.2);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+}
+
 .cell {
     width: var(--block-size);
     height: var(--block-size);
@@ -160,11 +128,12 @@ body {
     border: calc(var(--block-size) * 0.09375) solid rgba(255, 255, 255, 0.1);
 }
 
+/* Células vazias dos cards */
 .card .piece-grid .cell:not(.filled) {
     border: calc(var(--block-size) * 0.09375) solid rgba(255, 255, 255, 0.4);
 }
 
-/* Célula preenchida com a peça (Efeito bloco 3D) */
+/* Célula preenchida */
 .cell.filled {
     background-color: #e50000; 
     border-style: solid;
@@ -176,7 +145,7 @@ body {
     box-sizing: border-box;
 }
 
-/* Container para os acumuladores A, B e Pilha P */
+/* ACUMULADORES E PILHA */
 #accumulators-container {
     display: flex;
     justify-content: center;
@@ -192,7 +161,6 @@ body {
     gap: 30px;
 }
 
-/* Estilo básico dos Acumuladores e Pilha (mesmo tamanho proporcional do Card) */
 .accumulator {
     background-color: rgba(0, 0, 0, 0.75);
     border-radius: calc(var(--block-container-size) * 0.0625);
@@ -207,29 +175,13 @@ body {
     user-select: none;
     position: relative;
     transition: padding 0.3s ease, width 0.3s ease, height 0.3s ease;
+
+    & .piece-grid {
+        position: relative;
+        z-index: 2;
+    }
 }
 
-/* Acumulador A (Vermelho) */
-.accumulator.accumulator-a {
-    border: calc(var(--block-container-size) * 0.0625) solid #ff3333;
-}
-
-/* Acumulador B (Azul) */
-.accumulator.accumulator-b {
-    border: calc(var(--block-container-size) * 0.0625) solid #3333ff;
-}
-
-/* Acumulador P (Pilha - Verde, sem fundo, sem borda esquerda e sem sombra) */
-.accumulator.accumulator-p {
-    background: linear-gradient(90deg, #00000000 0%, #000000bb 50%);
-    border: calc(var(--block-container-size) * 0.0625) solid #14a714;
-    border-left: none;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-    box-shadow: none;
-}
-
-/* Rótulos dos Acumuladores no fundo */
 .accumulator-label {
     position: absolute;
     font-size: calc(var(--block-container-size) * 0.75);
@@ -239,22 +191,48 @@ body {
     user-select: none;
 }
 
-.accumulator-a .accumulator-label {
-    color: rgba(255, 51, 51, 0.5);
+.accumulator-a {
+    border: calc(var(--block-container-size) * 0.0625) solid #ff3333;
+
+    & .accumulator-label {
+        color: rgba(255, 51, 51, 0.5);
+    }
+
+    & .tag {
+        border-color: #ff3333;
+        color: #ff8888;
+    }
 }
 
-.accumulator-b .accumulator-label {
-    color: rgba(51, 51, 255, 0.5);
+.accumulator-b {
+    border: calc(var(--block-container-size) * 0.0625) solid #3333ff;
+
+    & .accumulator-label {
+        color: rgba(51, 51, 255, 0.5);
+    }
+
+    & .tag {
+        border-color: #3333ff;
+        color: #8888ff;
+    }
 }
 
-.accumulator-p .accumulator-label {
-    color: rgba(51, 255, 51, 0.5);
-}
+.accumulator-p {
+    background: linear-gradient(90deg, #00000000 0%, #000000bb 50%);
+    border: calc(var(--block-container-size) * 0.0625) solid #14a714;
+    border-left: none;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    box-shadow: none;
 
-/* Garante que o grid dos acumuladores fique em cima do rótulo */
-.accumulator .piece-grid {
-    position: relative;
-    z-index: 2;
+    & .accumulator-label {
+        color: rgba(51, 255, 51, 0.5);
+    }
+
+    & .tag {
+        border-color: #33ff33;
+        color: #88ff88;
+    }
 }
 
 .stack-counter {
@@ -273,19 +251,7 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-/* Célula preenchida com estilo cinza de ferro/pedra */
-.cell.filled.gray {
-    background-color: #555555; 
-    border-style: solid;
-    border-width: calc(var(--block-size) * 0.1875);
-    border-top-color: #888888;
-    border-left-color: #888888;
-    border-right-color: #333333;
-    border-bottom-color: #333333;
-    box-sizing: border-box;
-}
-
-/* Container para a barra de registradores (Barra superior) */
+/* REGISTRADORES */
 #registers-container {
     display: flex;
     justify-content: center;
@@ -296,7 +262,6 @@ body {
     transform: rotateX(3deg);
 }
 
-/* Estilo básico do Registrador (Forma/molde de pedra/ferro) */
 .register {
     background-color: rgba(45, 45, 45, 0.95);
     border: calc(var(--block-container-size) * 0.0625) solid #666666;
@@ -311,9 +276,19 @@ body {
     position: relative;
     user-select: none;
     transition: padding 0.3s ease, width 0.3s ease, height 0.3s ease;
+
+    & .piece-grid {
+        position: relative;
+        z-index: 2;
+    }
+
+    & .tag {
+        border-color: #666666;
+        color: #cccccc;
+    }
 }
 
-/* Rótulo do Registrador (letra "R0" grande e no fundo) */
+/* Rótulo do Registrador ("R0" no fundo) */
 .register-label {
     position: absolute;
     font-size: calc(var(--block-container-size) * 0.75);
@@ -323,13 +298,7 @@ body {
     pointer-events: none;
 }
 
-/* Garante que o grid fique acima do rótulo */
-.register .piece-grid {
-    position: relative;
-    z-index: 2;
-}
-
-/* Tags de Identificação sobre a borda superior */
+/* TAGS DE IDENTIFICAÇÃO */
 .tag {
     position: absolute;
     top: 0;
@@ -351,42 +320,15 @@ body {
     pointer-events: none;
 }
 
-/* Modificadores de borda para as tags para harmonizar com seus pais */
-.accumulator-a .tag {
-    border-color: #ff3333;
-    color: #ff8888;
-}
-
-.accumulator-b .tag {
-    border-color: #3333ff;
-    color: #8888ff;
-}
-
-.accumulator-p .tag {
-    border-color: #33ff33;
-    color: #88ff88;
-}
-
-.register .tag {
-    border-color: #666666;
-    color: #cccccc;
-}
-
-.card .tag {
-    border-color: #000000;
-    color: #aaaaaa;
-}
-
 /* ==========================================================================
-   PAINEL DO CADERNO (WINDOW HEADER, PAPEL DE CADERNO E CONTROLES)
+   PAINEL DO CADERNO
    ========================================================================== */
 
 #notebook-panel {
-    position: absolute;
+    position: relative;
     width: 380px;
-    height: 480px;
+    height: 100%;
     min-width: 280px;
-    min-height: 350px;
     background-color: #FFF8DC;
     border: 3px solid #111;
     border-radius: 8px;
@@ -395,13 +337,11 @@ body {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
     z-index: 1000;
     overflow: hidden;
-    transition: box-shadow 0.2s ease, width 0.3s ease, height 0.3s ease;
+    transition: left 0.3s ease-in-out;
 }
 
-#notebook-panel.is-dragging {
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
-    cursor: grabbing;
-    transition: none; /* Desativa transições durante o arraste */
+#notebook-panel.left-side {
+    order: -1;
 }
 
 /* Barra de título do Caderno */
@@ -414,29 +354,15 @@ body {
     align-items: center;
     user-select: none;
     border-bottom: 3px solid #111;
-    font-family: monospace;
-    font-weight: bold;
+}
+
+.window-header h4 {
+    margin: 0;
     font-size: 13px;
+    font-weight: bold;
+    font-family: monospace;
     letter-spacing: 0.5px;
-
-    &.undocked {
-        cursor: grab;
-    }
-}
-
-.window-header:active {
-    cursor: grabbing;
-}
-
-.window-title {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.window-controls {
-    display: flex;
-    gap: 6px;
+    color: #f1f1f1;
 }
 
 .win-btn {
@@ -464,7 +390,7 @@ body {
     background: #111;
 }
 
-/* Papel do caderno com as pautas e espiral visual */
+/* Papel do caderno com as pautas */
 .window-body.notebook-paper {
     flex-grow: 1;
     background-color: #FFF8DC;
@@ -475,7 +401,7 @@ body {
     overflow: hidden;
 }
 
-/* Folhas com espiral clássica de arame metalizado à esquerda */
+/* Espiral de arame à esquerda */
 .notebook-paper::before {
     content: "";
     position: absolute;
@@ -546,13 +472,13 @@ body {
     left: 55px;
     right: 15px;
     height: 24px;
-    background-color: rgba(255, 235, 59, 0.35); /* Amarelo caneta marca-texto escolar */
+    background-color: rgba(255, 235, 59, 0.35);
     pointer-events: none;
     z-index: 100; /* mix-blend-mode joga para trás do texto no renderizador */
     mix-blend-mode: multiply;
     display: none;
     border-radius: 2px;
-    transition: top 0.1s ease-out; /* Suaviza a descida do marca-texto! */
+    transition: top 0.1s ease-out;
 }
 
 /* Ajusta o flex do window-body do caderno para comportar o rodapé */
@@ -617,32 +543,7 @@ body {
     color: #00de00;
 }
 
-/* Visualizador de Snapping do Dock */
-#dock-preview {
-    position: absolute;
-    top: 20px;
-    bottom: 20px;
-    width: 380px;
-    background-color: rgba(255, 248, 220, 0.12); /* Cor de caderno bem sutil */
-    border: 2px dashed rgba(255, 248, 220, 0.35);
-    border-radius: 8px;
-    pointer-events: none;
-    z-index: 999;
-    opacity: 0;
-    transition: left 0.2s ease, right 0.2s ease;
-}
 
-#dock-preview.show-left {
-    opacity: 1;
-    left: 20px;
-    right: auto;
-}
-
-#dock-preview.show-right {
-    opacity: 1;
-    right: 20px;
-    left: auto;
-}
 
 /* Modificadores para a peça Alvo e Célula Dourada */
 .register.target-register {

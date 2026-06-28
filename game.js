@@ -68,14 +68,24 @@ function createEmptyMatrix() {
 }
 
 function generateSolvableTarget() {
-    // Generate a solvable target by performing 1-2 random logical operations on starting cards
-    let target = copyMatrix(gameState.cards[Math.floor(Math.random() * NUM_CARDS)]);
+    // Generate a solvable target by performing random logical operations on starting cards
+
+    const minOp = 2;
+    const maxOp = 4;
+    const initialCard = Math.floor(Math.random() * NUM_CARDS);
+
+    let answer = '';
+    answer += 'Answer:\nMOV A, C' + initialCard + '\n'; // COLA
+
+    let target = copyMatrix(gameState.cards[initialCard]);
     
-    const numOps = 1 + Math.floor(Math.random() * 2);
+    const numOps = minOp + Math.floor(Math.random() * maxOp);
     for (let i = 0; i < numOps; i++) {
         const op = ['OR', 'AND', 'XOR', 'NOT'][Math.floor(Math.random() * 4)];
-        const otherCard = gameState.cards[Math.floor(Math.random() * NUM_CARDS)];
-        
+
+        nextCard = Math.floor(Math.random() * NUM_CARDS);
+        const otherCard = gameState.cards[nextCard];
+
         let nextTarget = createEmptyMatrix();
         if (op === 'NOT') {
             for (let r = 0; r < GRID_SIZE; r++) {
@@ -101,8 +111,12 @@ function generateSolvableTarget() {
         const filledCount = nextTarget.flat().filter(x => x > 0).length;
         if (filledCount > 1 && filledCount < 15) {
             target = nextTarget;
+            
+            answer += op === 'NOT'? op + ' A\n': op + ' A, C' + nextCard + '\n'; // COLA
         }
     }
+    answer += 'MOV R0, A\nSYSCALL';
+    console.log(answer);
     
     // Set target cells to value 6 (styled as gold)
     for (let r = 0; r < GRID_SIZE; r++) {
