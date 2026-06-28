@@ -1,5 +1,5 @@
 :root {
-    --block-container-size: 96px;
+    --block-container-size: 86px;
     --block-size: calc(var(--block-container-size) / var(--grid-size));
 }
 
@@ -25,7 +25,7 @@ body {
     justify-content: center;
     align-items: center;
     padding: 20px;
-    background-image: url('TetrasmBG.png');
+    background-image: linear-gradient(90deg, black, #555);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -36,15 +36,41 @@ body {
 
 #game-container {
     width: 100%;
-    max-width: 1200px;
+    max-width: 900px;
     height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
     transition: width 0.3s ease, max-width 0.3s ease, margin 0.3s ease;
+
+    /* Tv */
+    position: relative;
+    padding: 25px;
+    border-top: solid 40px #1c1c1c;
+    border-right: solid 40px #111;
+    border-bottom: solid 40px #393535;
+    border-left: solid 40px #292525;
+    border-radius: 6px;
+    box-shadow: 0 0 0 40px #d5d5bc, inset 0 0 15px 15px black;
+    box-sizing: border-box;
+    background-image: url(TetrasmBG-curved.png);
+    background-size: 100% 100%;
+    perspective: 350px;
+    scale: 0.9;
 }
 
+#game-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, transparent 50%, rgba(0, 0, 0, 0.3) 51%);
+    background-size: 100% 4px;
+    z-index: 14;
+    box-sizing: border-box;
+}
 
 #app-layout.docked-left {
     flex-direction: row;
@@ -65,7 +91,6 @@ body {
 
 #app-layout.docked-left #game-container {
     width: calc(100% - 400px);
-    max-width: none;
     margin: 0;
 }
 
@@ -88,7 +113,6 @@ body {
 
 #app-layout.docked-right #game-container {
     width: calc(100% - 400px);
-    max-width: none;
     margin: 0;
 }
 
@@ -99,14 +123,14 @@ body {
     align-items: center;
     gap: 12px;
     width: 100%;
-    padding: 20px;
     background: transparent;
+    transform: rotateX(-3deg);
 }
 
 /* Card da Peça */
 .card {
     position: relative;
-    background-color: rgba(0, 0, 0, 0.75);
+    background-color: rgba(60, 60, 150, 1);
     border: calc(var(--block-container-size) * 0.0625) solid #000;
     border-radius: calc(var(--block-container-size) * 0.0625);
     padding: calc(var(--block-container-size) * 0.46875) calc(var(--block-container-size) * 0.1875);
@@ -132,8 +156,12 @@ body {
 .cell {
     width: var(--block-size);
     height: var(--block-size);
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: none;
     border: calc(var(--block-size) * 0.09375) solid rgba(255, 255, 255, 0.1);
+}
+
+.card .piece-grid .cell:not(.filled) {
+    border: calc(var(--block-size) * 0.09375) solid rgba(255, 255, 255, 0.4);
 }
 
 /* Célula preenchida com a peça (Efeito bloco 3D) */
@@ -151,12 +179,11 @@ body {
 /* Container para os acumuladores A, B e Pilha P */
 #accumulators-container {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    gap: 140px;
     align-items: center;
     width: 100%;
-    max-width: 800px;
     flex-grow: 1;
-    padding: 0 40px;
 }
 
 /* Grupo de acumuladores A e B */
@@ -213,15 +240,15 @@ body {
 }
 
 .accumulator-a .accumulator-label {
-    color: rgba(255, 51, 51, 0.15);
+    color: rgba(255, 51, 51, 0.5);
 }
 
 .accumulator-b .accumulator-label {
-    color: rgba(51, 51, 255, 0.15);
+    color: rgba(51, 51, 255, 0.5);
 }
 
 .accumulator-p .accumulator-label {
-    color: rgba(51, 255, 51, 0.15);
+    color: rgba(51, 255, 51, 0.5);
 }
 
 /* Garante que o grid dos acumuladores fique em cima do rótulo */
@@ -265,8 +292,8 @@ body {
     align-items: center;
     gap: 20px;
     width: 100%;
-    padding: 20px 20px 0 20px;
     background: transparent;
+    transform: rotateX(3deg);
 }
 
 /* Estilo básico do Registrador (Forma/molde de pedra/ferro) */
@@ -291,7 +318,7 @@ body {
     position: absolute;
     font-size: calc(var(--block-container-size) * 0.75);
     font-weight: bold;
-    color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.3);
     z-index: 1;
     pointer-events: none;
 }
