@@ -74,6 +74,7 @@ class SoundManager {
         }
     }
 
+    // fallback para garantir saida de áudio usando sintetizador
     playSynthFallback(type) {
         try {
             const ctx = this.getAudioContext();
@@ -135,7 +136,7 @@ class SoundManager {
                 osc.stop(now + 0.2);
             }
         } catch (e) {
-            // Silently ignore audio context issues
+            // Passa erros no synth silenciosamente
         }
     }
 }

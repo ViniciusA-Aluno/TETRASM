@@ -1,4 +1,3 @@
-// script.js - Orquestrador Geral e Controle de Fluxo
 let isExecutionRunning = false;
 let executionTimeoutId = null;
 let currentInstructionIndex = 0;

@@ -461,7 +461,7 @@ body {
     line-height: 24px;
     color: #111;
     font-weight: bold;
-    padding: 18px 15px 18px 55px; /* Deixa margem para o arame e a linha vermelha */
+    padding: 18px 15px 18px 55px;
     box-sizing: border-box;
     overflow-y: auto;
 }
@@ -473,7 +473,7 @@ body {
     height: 24px;
     background-color: rgba(255, 235, 59, 0.445);
     pointer-events: none;
-    z-index: 100; /* mix-blend-mode joga para trás do texto no renderizador */
+    z-index: 100;
     mix-blend-mode: multiply;
     display: none;
     border-radius: 2px;
@@ -486,7 +486,7 @@ body {
     align-items: center;
     gap: 8px;
     padding: 10px 15px;
-    background-color: #E6D8B0; /* Tom ligeiramente mais escuro que o papel para dar profundidade */
+    background-color: #E6D8B0;
     border-top: 3px solid #111;
     z-index: 15;
 }
@@ -542,7 +542,7 @@ body {
 
 /* Modificadores para a peça Alvo e Célula Dourada */
 .register.target-register {
-    border: calc(var(--block-container-size) * 0.0625) solid #ffd700; /* Dourado */
+    border: calc(var(--block-container-size) * 0.0625) solid #ffd700;
     box-shadow: 0 0 15px rgba(255, 215, 0, 0.4), inset 0 0 15px rgba(255, 215, 0, 0.2);
 }
 .register.target-register .tag {
@@ -566,7 +566,7 @@ body {
     box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
 }
 
-/* Botão de Configurações no canto superior do monitor */
+/* Botão de Configurações */
 .btn-settings {
     position: absolute;
     top: 15px;
@@ -593,7 +593,7 @@ body {
     transform: scale(1.1);
 }
 
-/* Sistema Abstrato de Pop-ups e Janelas In-Game (Estilo Clássico Windows 95/98) */
+/* Sistema de Janelas In-Game (Estilo Clássico Windows) */
 .game-dialog-overlay {
     position: absolute;
     top: 0;
@@ -640,7 +640,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 5px 4px 6px 8px;
-    background: linear-gradient(90deg, #000080, #1084d0); /* Azul Windows ativo padrão */
+    background: linear-gradient(90deg, #000080, #1084d0);
     color: #ffffff;
     font-weight: bold;
     font-size: 20px;
@@ -657,7 +657,7 @@ body {
     background: linear-gradient(90deg, #800000, #c00000); /* Vermelho Windows para erros críticos */
 }
 .dialog-settings .game-dialog-header {
-    background: linear-gradient(90deg, #008080, #00aaaa); /* Azul-petróleo clássico desktop */
+    background: linear-gradient(90deg, #008080, #00aaaa); /* Azul clássico desktop */
 }
 
 #game-dialog-title {
@@ -666,7 +666,6 @@ body {
     text-overflow: ellipsis;
 }
 
-/* Botão Fechar Clássico da barra de título do Win95 */
 .win95-close-btn {
     background: #c0c0c0;
     color: #000;
@@ -703,7 +702,6 @@ body {
     background-color: #c0c0c0;
 }
 
-/* Caixa com fundo e borda em 3D rebaixada (inset panel) */
 .win95-content-box {
     display: flex;
     flex-direction: column;
@@ -726,7 +724,7 @@ body {
 .modal-congrats {
     font-size: 14px;
     font-weight: bold;
-    color: #008000; /* Verde escuro retro */
+    color: #008000;
     margin-bottom: 8px;
     text-transform: uppercase;
 }
@@ -767,7 +765,7 @@ body {
     border-right: 1px solid #fff;
     border-bottom: 1px solid #fff;
     box-shadow: inset 1px 1px 0 #808080, inset -1px -1px 0 #dfdfdf;
-    padding: 5px 13px 3px 15px; /* Efeito de clique físico com recuo */
+    padding: 5px 13px 3px 15px;
 }
 
 /* Ajustes de Configurações Retro */

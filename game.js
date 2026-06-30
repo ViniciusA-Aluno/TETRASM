@@ -68,14 +68,12 @@ function createEmptyMatrix() {
 }
 
 function generateSolvableTarget() {
-    // Generate a solvable target by performing random logical operations on starting cards
-
     const minOp = 2;
     const maxOp = 4;
     const initialCard = Math.floor(Math.random() * NUM_CARDS);
 
     let answer = '';
-    answer += 'Answer:\nMOV A, C' + initialCard + '\n'; // COLA
+    answer += 'Answer (for cheaters and devs):\nMOV A, C' + initialCard + '\n'; // COLA
 
     let target = copyMatrix(gameState.cards[initialCard]);
     
@@ -118,7 +116,6 @@ function generateSolvableTarget() {
     answer += 'MOV R0, A\nSYSCALL';
     console.log(answer);
     
-    // Set target cells to value 6 (styled as gold)
     for (let r = 0; r < GRID_SIZE; r++) {
         for (let c = 0; c < GRID_SIZE; c++) {
             if (target[r][c] > 0) {
@@ -285,7 +282,7 @@ function executeNot(destName) {
             if (destMatrix[r][c] > 0) {
                 result[r][c] = 0;
             } else {
-                result[r][c] = 1; // Default to color 1 (red)
+                result[r][c] = 1;
             }
         }
     }

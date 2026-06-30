@@ -62,7 +62,6 @@ function animatePieceMove(srcName, destName, matrixToMove) {
         clone.className = 'piece-grid floating-piece-grid';
         renderGrid(clone, matrixToMove);
 
-        // Posicionamento absoluto inicial sobre a origem
         clone.style.position = 'fixed';
         clone.style.left = `${srcRect.left-5}px`;
         clone.style.top = `${srcRect.top-5}px`;
