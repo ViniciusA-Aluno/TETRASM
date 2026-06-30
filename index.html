@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tetrasm - Cards</title>
+    <title>Tetrasm</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="app-layout">
+        <div></div>
         <div id="game-container">
+            <!-- Botão de Configurações no canto do monitor -->
+            <button id="btn-settings" class="btn-settings" title="Configurações do Sistema">⚙️</button>
+
             <!-- Barra Superior (Registradores) -->
             <div id="registers-container">
                 <div class="register target-register" id="reg-target">
@@ -48,12 +52,28 @@
             <div id="cards-container">
                 <!-- Cards múltiplos gerados via script.js -->
             </div>
+
+            <!-- Janela / Pop-up Abstrato dentro do Game Container -->
+            <div id="game-dialog-overlay" class="game-dialog-overlay" style="display: none;">
+                <div id="game-dialog-card" class="game-dialog-card">
+                    <div id="game-dialog-header" class="game-dialog-header">
+                        <span id="game-dialog-title">TÍTULO</span>
+                        <button class="win95-close-btn" onclick="closeDialog()" title="Fechar">×</button>
+                    </div>
+                    <div id="game-dialog-body" class="game-dialog-body">
+                        <!-- Conteúdo dinâmico -->
+                    </div>
+                    <div id="game-dialog-footer" class="game-dialog-footer">
+                        <!-- Botões dinâmicos -->
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Painel do Caderno de Comandos -->
         <div id="notebook-panel">
             <div class="window-header" id="notebook-header">
-                <h4>Caderno de Comandos</h4>
+                <h3>Caderno de Comandos</h3>
                 <button id="btn-toggle-side" class="win-btn" title="Mover para Esquerda">&lt;</button>
             </div>
             <div class="window-body notebook-paper">
@@ -70,26 +90,10 @@
         </div>
     </div>
 
-    <!-- Modal de Vitória -->
-    <div id="victory-modal" class="modal-overlay" style="display: none;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>SISTEMA DECORADO</h2>
-            </div>
-            <div class="modal-body">
-                <p class="modal-congrats">PARABÉNS, OPERADOR!</p>
-                <p>A peça em <strong>R0</strong> corresponde à demanda do <strong>ALVO</strong>.</p>
-                <p>Seus comandos assembly integraram a estrutura com sucesso.</p>
-            </div>
-            <div class="modal-footer">
-                <button id="btn-next-level" class="modal-btn">Próxima Peça (Novo Jogo)</button>
-            </div>
-        </div>
-    </div>
-
     <script src="game.js"></script>
     <script src="ui.js"></script>
     <script src="sound.js"></script>
+    <script src="dialog.js"></script>
     <script src="animation.js"></script>
     <script src="docking.js"></script>
     <script src="script.js"></script>

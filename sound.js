@@ -3,6 +3,7 @@ class SoundManager {
     constructor() {
         this.sounds = {};
         this.isMuted = false;
+        this.volume = 1.0;
         this.audioContext = null;
 
         // Mapeamento dos arquivos de áudio em assets/audio/
@@ -25,8 +26,20 @@ class SoundManager {
             const audio = new Audio();
             audio.src = path;
             audio.preload = 'auto';
+            audio.volume = this.volume;
             this.sounds[key] = audio;
         }
+    }
+
+    setVolume(val) {
+        this.volume = Math.max(0, Math.min(1, parseFloat(val)));
+        for (const audio of Object.values(this.sounds)) {
+            if (audio) audio.volume = this.volume;
+        }
+    }
+
+    getVolume() {
+        return this.volume;
     }
 
     getAudioContext() {
@@ -43,15 +56,15 @@ class SoundManager {
     }
 
     play(soundName) {
-        if (this.isMuted) return;
+        if (this.isMuted || this.volume <= 0) return;
 
         const audio = this.sounds[soundName];
         if (audio) {
-            // Tenta reproduzir o arquivo de áudio
-            const playPromise = audio.cloneNode().play();
+            const clone = audio.cloneNode();
+            clone.volume = this.volume;
+            const playPromise = clone.play();
             if (playPromise !== undefined) {
                 playPromise.catch(() => {
-                    // Se falhar (ex: políticas de autoplay do navegador antes de interação), tenta Web Audio API fallback
                     this.playSynthFallback(soundName);
                 });
             }
@@ -71,12 +84,13 @@ class SoundManager {
             gain.connect(ctx.destination);
 
             const now = ctx.currentTime;
+            const vol = this.volume;
 
             if (type === 'move') {
                 osc.type = 'sine';
                 osc.frequency.setValueAtTime(220, now);
                 osc.frequency.exponentialRampToValueAtTime(440, now + 0.15);
-                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.setValueAtTime(0.15 * vol, now);
                 gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
                 osc.start(now);
                 osc.stop(now + 0.15);
@@ -84,7 +98,7 @@ class SoundManager {
                 osc.type = 'triangle';
                 osc.frequency.setValueAtTime(520, now);
                 osc.frequency.exponentialRampToValueAtTime(130, now + 0.08);
-                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.setValueAtTime(0.2 * vol, now);
                 gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
                 osc.start(now);
                 osc.stop(now + 0.08);
@@ -92,7 +106,7 @@ class SoundManager {
                 osc.type = 'square';
                 osc.frequency.setValueAtTime(600, now);
                 osc.frequency.setValueAtTime(300, now + 0.05);
-                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.setValueAtTime(0.1 * vol, now);
                 gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
                 osc.start(now);
                 osc.stop(now + 0.1);
@@ -105,7 +119,7 @@ class SoundManager {
                     noteGain.connect(ctx.destination);
                     noteOsc.type = 'triangle';
                     noteOsc.frequency.setValueAtTime(freq, now + i * 0.1);
-                    noteGain.gain.setValueAtTime(0.2, now + i * 0.1);
+                    noteGain.gain.setValueAtTime(0.2 * vol, now + i * 0.1);
                     noteGain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.1 + 0.2);
                     noteOsc.start(now + i * 0.1);
                     noteOsc.stop(now + i * 0.1 + 0.2);
@@ -114,7 +128,7 @@ class SoundManager {
                 osc.type = 'sawtooth';
                 osc.frequency.setValueAtTime(150, now);
                 osc.frequency.linearRampToValueAtTime(80, now + 0.2);
-                gain.gain.setValueAtTime(0.25, now);
+                gain.gain.setValueAtTime(0.25 * vol, now);
                 gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
                 osc.start(now);
                 osc.stop(now + 0.2);

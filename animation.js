@@ -64,10 +64,8 @@ function animatePieceMove(srcName, destName, matrixToMove) {
 
         // Posicionamento absoluto inicial sobre a origem
         clone.style.position = 'fixed';
-        clone.style.left = `${srcRect.left}px`;
-        clone.style.top = `${srcRect.top}px`;
-        clone.style.width = `${srcRect.width}px`;
-        clone.style.height = `${srcRect.height}px`;
+        clone.style.left = `${srcRect.left-5}px`;
+        clone.style.top = `${srcRect.top-5}px`;
         clone.style.zIndex = '9999';
         clone.style.pointerEvents = 'none';
 

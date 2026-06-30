@@ -94,7 +94,7 @@ async function stepExecution() {
                 
                 if (gameState.hasWon) {
                     if (window.soundManager) window.soundManager.play('win');
-                    updateStatus("🎉 PARABÉNS! Você construiu a peça alvo com sucesso!", "success");
+                    updateStatus("PARABÉNS! Você construiu a peça alvo com sucesso!", "success");
                     showVictoryCelebration();
                     stopExecution(true);
                     return;
@@ -111,7 +111,12 @@ async function stepExecution() {
             scrollToLine(currentInstructionIndex);
             
             if (window.soundManager) window.soundManager.play('error');
-            updateStatus(`Erro na Linha ${currentInstructionIndex + 1}: ${err.message}`, "error");
+            updateStatus(`Erro na Linha ${currentInstructionIndex + 1}`, "error");
+            
+            if (typeof showErrorDialog === 'function') {
+                showErrorDialog(err.message);
+            }
+            
             stopExecution(false);
             return;
         }
@@ -158,6 +163,7 @@ function resetExecution() {
     stopExecution();
     restoreInitialState();
     renderGame();
+    closeDialog();
     if (window.soundManager) window.soundManager.play('newgame');
     updateStatus("Nível reiniciado", "success");
 }
@@ -170,9 +176,12 @@ function newTargetExecution() {
 }
 
 function showVictoryCelebration() {
-    const modal = document.getElementById('victory-modal');
-    if (modal) {
-        modal.style.display = 'flex';
+    if (typeof showVictoryDialog === 'function') {
+        showVictoryDialog(() => {
+            initGame();
+            if (window.soundManager) window.soundManager.play('newgame');
+            updateStatus("Próxima fase iniciada!");
+        });
     }
 }
 
@@ -180,25 +189,22 @@ function setupNotebookEvents() {
     const btnRun = document.getElementById('btn-run');
     const btnStep = document.getElementById('btn-step');
     const btnReset = document.getElementById('btn-reset');
-    const btnNextLevel = document.getElementById('btn-next-level');
+    const btnSettings = document.getElementById('btn-settings');
     const textarea = document.getElementById('notebook-input');
 
     if (btnRun) btnRun.addEventListener('click', toggleRun);
     if (btnStep) btnStep.addEventListener('click', stepExecution);
     if (btnReset) btnReset.addEventListener('click', resetExecution);
+    if (btnSettings) {
+        btnSettings.addEventListener('click', () => {
+            if (typeof showSettingsDialog === 'function') {
+                showSettingsDialog();
+            }
+        });
+    }
     
     const btnNewTarget = document.getElementById('btn-new-target');
     if (btnNewTarget) btnNewTarget.addEventListener('click', newTargetExecution);
-    
-    if (btnNextLevel) {
-        btnNextLevel.addEventListener('click', () => {
-            const modal = document.getElementById('victory-modal');
-            if (modal) modal.style.display = 'none';
-            initGame();
-            if (window.soundManager) window.soundManager.play('newgame');
-            updateStatus("Próxima fase iniciada!");
-        });
-    }
     
     if (textarea) {
         textarea.addEventListener('scroll', () => {

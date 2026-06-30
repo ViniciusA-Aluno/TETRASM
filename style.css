@@ -37,7 +37,7 @@ body {
 
 #game-container {
     width: calc(100% - 400px);
-    max-width: 900px;
+    max-width: calc( var(--block-container-size) * 10 - var(--inner-border) * 2 + 50px );
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -46,12 +46,13 @@ body {
     transition: width 0.3s ease, max-width 0.3s ease, margin 0.3s ease;
 
     /* TV */
+    --inner-border: 40px;
     position: relative;
     padding: 25px;
-    border-top: solid 40px #1c1c1c;
-    border-right: solid 40px #111;
-    border-bottom: solid 40px #393535;
-    border-left: solid 40px #292525;
+    border-top: solid var(--inner-border) #1c1c1c;
+    border-right: solid var(--inner-border) #111;
+    border-bottom: solid var(--inner-border) #393535;
+    border-left: solid var(--inner-border) #292525;
     border-radius: 6px;
     box-shadow: 0 0 0 40px #d5d5bc, 0 70px 0 40px #85856c, inset 0 0 15px 15px black;
     box-sizing: border-box;
@@ -114,6 +115,8 @@ body {
 }
 
 .floating-piece-grid {
+    width: fit-content;
+    height: fit-content;
     background-color: rgba(20, 20, 35, 0.9);
     border: 2px solid rgba(255, 255, 255, 0.4);
     border-radius: calc(var(--block-size) * 0.2);
@@ -124,7 +127,7 @@ body {
 .cell {
     width: var(--block-size);
     height: var(--block-size);
-    background-color: none;
+    background-color: transparent;
     border: calc(var(--block-size) * 0.09375) solid rgba(255, 255, 255, 0.1);
 }
 
@@ -356,9 +359,9 @@ body {
     border-bottom: 3px solid #111;
 }
 
-.window-header h4 {
+.window-header h3 {
     margin: 0;
-    font-size: 13px;
+    font-size: 17px;
     font-weight: bold;
     font-family: monospace;
     letter-spacing: 0.5px;
@@ -463,28 +466,18 @@ body {
     overflow-y: auto;
 }
 
-/* ==========================================================================
-   CONTROLES DO CADERNO E DESTAQUE DE LINHA (PLAY, STEP, STATUS E MARCA-TEXTO)
-   ========================================================================== */
-
 .notebook-line-highlight {
     position: absolute;
     left: 55px;
     right: 15px;
     height: 24px;
-    background-color: rgba(255, 235, 59, 0.35);
+    background-color: rgba(255, 235, 59, 0.445);
     pointer-events: none;
     z-index: 100; /* mix-blend-mode joga para trás do texto no renderizador */
     mix-blend-mode: multiply;
     display: none;
     border-radius: 2px;
     transition: top 0.1s ease-out;
-}
-
-/* Ajusta o flex do window-body do caderno para comportar o rodapé */
-#notebook-panel .window-body.notebook-paper {
-    display: flex;
-    flex-direction: column;
 }
 
 /* Barra de controles no rodapé do caderno */
@@ -500,7 +493,7 @@ body {
 
 .notebook-btn {
     font-family: 'Courier New', Courier, monospace;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: bold;
     padding: 6px 12px;
     background-color: #FFF8DC;
@@ -524,26 +517,25 @@ body {
 
 .notebook-status {
     font-family: 'Courier New', Courier, monospace;
-    font-size: 15px;
+    font-size: 18px;
     font-weight: bold;
     color: #FFF;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    padding: 4px;
     padding-left: 8px;
     background-color: #1A1A1A;
     z-index: 15;
 }
 
 .notebook-status.error {
-    color: #e60000;
+    color: #ff3e3e;
 }
 
 .notebook-status.success {
     color: #00de00;
 }
-
-
 
 /* Modificadores para a peça Alvo e Célula Dourada */
 .register.target-register {
@@ -571,94 +563,240 @@ body {
     box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
 }
 
-/* Modal de Vitória */
-.modal-overlay {
-    position: fixed;
+/* Botão de Configurações no canto superior do monitor */
+.btn-settings {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: rgba(20, 20, 20, 0.8);
+    border: 2px solid #555;
+    color: #fff;
+    border-radius: 6px;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    z-index: 100;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+}
+
+.btn-settings:hover {
+    border-color: #fff;
+    color: #111;
+    transform: scale(1.1);
+}
+
+/* Sistema Abstrato de Pop-ups e Janelas In-Game (Estilo Clássico Windows 95/98) */
+.game-dialog-overlay {
+    position: absolute;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.85);
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.75);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 9999;
-    backdrop-filter: blur(8px);
+    z-index: 500;
+    border-radius: inherit;
 }
 
-.modal-content {
-    background-color: rgba(20, 20, 20, 0.95);
-    border: 3px solid #ffd700;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 450px;
-    padding: 30px;
+.game-dialog-card {
+    display: flex;
+    flex-direction: column;
+    background-color: #c0c0c0;
+    border-top: 2px solid #fff;
+    border-left: 2px solid #fff;
+    border-right: 2px solid #5a5a5a;
+    border-bottom: 2px solid #5a5a5a;
+    box-shadow: inset 1px 1px 0px #dfdfdf, inset -1px -1px 0px #0a0a0a, 0 10px 30px rgba(0, 0, 0, 0.7);
+    border-radius: 0; /* Quadrado clássico */
+    width: 60%;
+    min-height: 30%;
+    max-width: 440px;
+    padding: 3px; /* Borda externa fina */
     text-align: center;
-    box-shadow: 0 0 25px rgba(255, 215, 0, 0.5), inset 0 0 15px rgba(255, 215, 0, 0.2);
-    font-family: 'Courier New', Courier, monospace;
-    color: #f1f1f1;
-    transform: scale(0.7);
+    transform: scale(0.85);
     opacity: 0;
-    animation: modalAppear 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    animation: gameDialogAppear 0.25s cubic-bezier(0.19, 1, 0.22, 1) forwards;
 }
 
-@keyframes modalAppear {
+@keyframes gameDialogAppear {
     to {
         transform: scale(1);
         opacity: 1;
     }
 }
 
-.modal-header h2 {
-    color: #ffd700;
-    font-size: 22px;
-    margin-bottom: 20px;
-    letter-spacing: 2px;
-    text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
-    text-transform: uppercase;
+.game-dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 4px 6px 8px;
+    background: linear-gradient(90deg, #000080, #1084d0); /* Azul Windows ativo padrão */
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 20px;
+    font-family: monospace;
+    letter-spacing: 0.5px;
+    user-select: none;
 }
 
-.modal-body {
-    font-size: 16px;
-    line-height: 1.6;
-    margin-bottom: 25px;
+/* Modificadores de cabeçalho baseados no Tema do Dialog */
+.dialog-victory .game-dialog-header {
+    background: linear-gradient(90deg, #004d00, #008000); /* Verde Windows para vitória */
+}
+.dialog-error .game-dialog-header {
+    background: linear-gradient(90deg, #800000, #c00000); /* Vermelho Windows para erros críticos */
+}
+.dialog-settings .game-dialog-header {
+    background: linear-gradient(90deg, #008080, #00aaaa); /* Azul-petróleo clássico desktop */
+}
+
+#game-dialog-title {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* Botão Fechar Clássico da barra de título do Win95 */
+.win95-close-btn {
+    background: #c0c0c0;
+    color: #000;
+    border-top: 1px solid #fff;
+    border-left: 1px solid #fff;
+    border-right: 1px solid #000;
+    border-bottom: 1px solid #000;
+    box-shadow: inset 1px 1px 0 #dfdfdf, inset -1px -1px 0 #808080;
+    width: 20px;
+    height: 20px;
+    font-size: 22px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0 1px 0 0;
+}
+
+.win95-close-btn:active {
+    border-top: 1px solid #000;
+    border-left: 1px solid #000;
+    border-right: 1px solid #fff;
+    border-bottom: 1px solid #fff;
+    box-shadow: inset 1px 1px 0 #808080, inset -1px -1px 0 #dfdfdf;
+    padding: 1px 0 0 1px;
+}
+
+.game-dialog-body {
+    padding: 14px;
+    font-size: 13px;
+    line-height: 1.4;
+    color: #000;
+    background-color: #c0c0c0;
+}
+
+/* Caixa com fundo e borda em 3D rebaixada (inset panel) */
+.win95-content-box {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-align: left;
+}
+
+.win95-inset-panel {
+    font-weight: bold;
+    background-color: #ffffff;
+    border-top: 2px solid #808080;
+    border-left: 2px solid #808080;
+    border-right: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    padding: 12px;
+    color: #000;
+    box-shadow: inset 1px 1px 0 #0a0a0a;
 }
 
 .modal-congrats {
-    font-size: 20px;
+    font-size: 14px;
     font-weight: bold;
-    color: #00ff00;
-    text-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
-    margin-bottom: 15px;
+    color: #008000; /* Verde escuro retro */
+    margin-bottom: 8px;
+    text-transform: uppercase;
 }
 
-.modal-footer {
+.game-dialog-footer {
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 14px;
+    margin-top: auto;
 }
 
-.modal-btn {
-    font-family: 'Courier New', Courier, monospace;
+/* Botão clássico estilo Windows 95 */
+.game-dialog-btn {
+    background: #c0c0c0;
+    color: #000;
+    border-top: 1px solid #fff;
+    border-left: 1px solid #fff;
+    border-right: 1px solid #000;
+    border-bottom: 1px solid #000;
+    box-shadow: inset 1px 1px 0 #dfdfdf, inset -1px -1px 0 #808080;
+    padding: 6px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: 'MS Sans Serif', Tahoma, Arial, sans-serif;
+    cursor: pointer;
+    outline: none;
+    min-width: 75px;
+}
+
+.game-dialog-btn:hover {
+    background: #d4d0c8;
+}
+
+.game-dialog-btn:active {
+    border-top: 1px solid #000;
+    border-left: 1px solid #000;
+    border-right: 1px solid #fff;
+    border-bottom: 1px solid #fff;
+    box-shadow: inset 1px 1px 0 #808080, inset -1px -1px 0 #dfdfdf;
+    padding: 5px 13px 3px 15px; /* Efeito de clique físico com recuo */
+}
+
+/* Ajustes de Configurações Retro */
+.settings-control {
+    background-color: #c0c0c0;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.settings-control label {
     font-size: 15px;
     font-weight: bold;
-    color: #111;
-    background-color: #ffd700;
-    border: 2px solid #000;
-    padding: 10px 20px;
-    border-radius: 6px;
+    color: #000;
+}
+
+.slider-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.slider-row input[type="range"] {
+    width: 100%;
+    height: 10px;
     cursor: pointer;
-    box-shadow: 3px 3px 0 #000;
-    transition: all 0.2s ease;
 }
 
-.modal-btn:hover {
-    background-color: #fff;
-    border-color: #000;
-    transform: translate(-2px, -2px);
-    box-shadow: 5px 5px 0 #000;
-}
-
-.modal-btn:active {
-    transform: translate(1px, 1px);
-    box-shadow: 1px 1px 0 #000;
+.slider-row input[type="range"]::-webkit-slider-runnable-track {
+    background: #c0c0c0;
+    border: solid 3px black;
 }
