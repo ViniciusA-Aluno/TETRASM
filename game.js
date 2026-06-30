@@ -136,16 +136,16 @@ function parseInstruction(line) {
     const parts = code.split(/\s+/);
     const op = parts[0].toUpperCase();
     
-    const validOps = ['MOV', 'AND', 'OR', 'XOR', 'NOT', 'PUSH', 'POP', 'SYSCALL'];
+    const validOps = ['MOV', 'AND', 'OR', 'XOR', 'NOT', 'PUSH', 'POP', 'SYSCALL', 'HELP'];
     if (!validOps.includes(op)) {
         throw new Error(`Comando desconhecido: '${op}'`);
     }
 
-    if (op === 'SYSCALL') {
+    if (op === 'SYSCALL' || op === 'HELP') {
         if (parts.length > 1) {
-            throw new Error(`SYSCALL não aceita argumentos`);
+            throw new Error(`O comando ${op} não aceita argumentos`);
         }
-        return { type: 'instruction', op: 'SYSCALL', originalText: code };
+        return { type: 'instruction', op: op, originalText: code };
     }
 
     const rest = code.substring(parts[0].length).trim();
@@ -350,6 +350,9 @@ function executeInstruction(parsed) {
             break;
         case 'SYSCALL':
             executeSyscall();
+            break;
+        case 'HELP':
+            // Comando HELP apenas loga o sumário (gerenciado em script.js)
             break;
         default:
             throw new Error(`Instrução desconhecida: ${parsed.op}`);

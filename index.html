@@ -78,13 +78,14 @@
             </div>
             <div class="window-body notebook-paper">
                 <div id="line-highlight" class="notebook-line-highlight"></div>
-                <textarea id="notebook-input" class="notebook-textarea" placeholder="Digite comandos de Assembly aqui...&#10;&#10;Exemplo:&#10;MOV A, C0&#10;MOV B, C1&#10;MOV R0, A"></textarea>
+                <textarea id="notebook-input" class="notebook-textarea" placeholder="Digite comandos de Assembly aqui...&#10;&#10;Exemplo:&#10;MOV A, C0&#10;MOV B, C1&#10;MOV R0, A&#10;&#10;Use SYSCALL para comparar R0 ao alvo.&#10;&#10;Use HELP para ver todos os comandos."></textarea>
                 <div id="notebook-status" class="notebook-status">Pronto</div>
                 <div class="notebook-controls">
                     <button id="btn-run" class="notebook-btn" title="Executar todo o código">▶ Executar</button>
                     <button id="btn-step" class="notebook-btn" title="Executar linha por linha">⏭ Passo</button>
                     <button id="btn-reset" class="notebook-btn" title="Reiniciar nível atual">↺ Resetar</button>
                     <button id="btn-new-target" class="notebook-btn" title="Gerar novas peças e alvo">🎲 Novo Alvo</button>
+                    <button id="btn-help" class="notebook-btn" title="Mostrar comandos disponíveis">❓ Ajuda</button>
                 </div>
             </div>
         </div>

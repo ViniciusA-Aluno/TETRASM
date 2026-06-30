@@ -2,6 +2,8 @@
 let isExecutionRunning = false;
 let executionTimeoutId = null;
 let currentInstructionIndex = 0;
+let currentLineCode = 'Pronto';
+let helpOpen = false;
 let linesOfCode = [];
 
 function initGame() {
@@ -39,6 +41,7 @@ function stopExecution(completed = true) {
 }
 
 async function stepExecution() {
+    isExecutionRunning = true;
     const textarea = document.getElementById('notebook-input');
     if (!textarea) return;
     
@@ -90,11 +93,19 @@ async function stepExecution() {
                 
                 executeInstruction(parsed);
                 renderGame();
-                updateStatus(`Linha ${currentInstructionIndex + 1}: ${parsed.originalText}`, "success");
+                
+                if (parsed.op === 'HELP') {
+                    updateStatus(getHelpSummary(), "success");
+                } else {
+                    if (isExecutionRunning) {
+                        currentLineCode = `Linha ${currentInstructionIndex + 1}: ${parsed.originalText}`;
+                        updateStatus(currentLineCode, "success");
+                    }
+                }
                 
                 if (gameState.hasWon) {
                     if (window.soundManager) window.soundManager.play('win');
-                    updateStatus("PARABÉNS! Você construiu a peça alvo com sucesso!", "success");
+                    updateStatus("Programa executado com sucesso!", "success");
                     showVictoryCelebration();
                     stopExecution(true);
                     return;
@@ -144,14 +155,20 @@ function toggleRun() {
     const runBtn = document.getElementById('btn-run');
     if (!runBtn) return;
 
-    if (isExecutionRunning && executionTimeoutId) {
-        clearTimeout(executionTimeoutId);
-        executionTimeoutId = null;
+    if (isExecutionRunning) {
+        if (executionTimeoutId) {
+            clearTimeout(executionTimeoutId);
+            executionTimeoutId = null;
+        }
+        isExecutionRunning = false;
         runBtn.textContent = '▶ Executar';
         updateStatus("Execução pausada");
     } else {
         if (currentInstructionIndex === 0) {
             restoreInitialState();
+        }
+        else {
+            updateStatus(currentLineCode, "success");
         }
         isExecutionRunning = true;
         runBtn.textContent = '⏸ Pausar';
@@ -193,7 +210,7 @@ function setupNotebookEvents() {
     const textarea = document.getElementById('notebook-input');
 
     if (btnRun) btnRun.addEventListener('click', toggleRun);
-    if (btnStep) btnStep.addEventListener('click', stepExecution);
+    if (btnStep) btnStep.addEventListener('click', async ()=>{await stepExecution();isExecutionRunning=false;});
     if (btnReset) btnReset.addEventListener('click', resetExecution);
     if (btnSettings) {
         btnSettings.addEventListener('click', () => {
@@ -205,6 +222,19 @@ function setupNotebookEvents() {
     
     const btnNewTarget = document.getElementById('btn-new-target');
     if (btnNewTarget) btnNewTarget.addEventListener('click', newTargetExecution);
+
+    const btnHelp = document.getElementById('btn-help');
+    if (btnHelp) {
+        btnHelp.addEventListener('click', () => {
+            if (helpOpen) {
+                updateStatus(currentLineCode);
+            }
+            else {
+                updateStatus(getHelpSummary(), "success");
+            }
+            helpOpen = !helpOpen;
+        });
+    }
     
     if (textarea) {
         textarea.addEventListener('scroll', () => {
@@ -220,6 +250,40 @@ function setupNotebookEvents() {
             }
         });
     }
+}
+
+function getHelpSummary() {
+    return `COMANDOS TETRASM DISPONÍVEIS:
+• MOV dest, src  
+    ⮩ Copia src para dest
+
+• AND dest, src  
+    ⮩ E lógico (dest & src) -> dest
+
+• OR dest, src   
+    ⮩ OU lógico (dest | src) -> dest
+
+• XOR dest, src  
+    ⮩ OU Exclusivo (dest ^ src) -> dest
+
+• NOT dest       
+    ⮩ Inverte pixels de dest
+
+• PUSH src       
+    ⮩ Insere src no topo de P
+
+• POP dest       
+    ⮩ Retira do topo de P para dest
+
+• SYSCALL        
+    ⮩ Valida R0 com o ALVO
+
+• HELP           
+    ⮩ Mostra este sumário de ajuda
+
+
+[Destinos válidos: A, B, R0]
+[Origens válidas: A, B, R0, C0, C1, C2, C3]`;
 }
 
 // Inicialização

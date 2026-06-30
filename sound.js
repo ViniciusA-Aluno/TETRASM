@@ -8,6 +8,7 @@ class SoundManager {
 
         // Mapeamento dos arquivos de áudio em assets/audio/
         this.soundSources = {
+            config: 'assets/audio/config.mp3',
             move: 'assets/audio/moving.mp3',
             snap: 'assets/audio/snap2.mp3',
             clack: 'assets/audio/clack.mp3',
