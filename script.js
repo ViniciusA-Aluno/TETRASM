@@ -285,6 +285,120 @@ function getHelpSummary() {
 [Origens válidas: A, B, R0, C0, C1, C2, C3]`;
 }
 
+// Lógica da Tela Inicial (Main Menu)
+let currentMenuIndex = 0;
+
+function setupMenuEvents() {
+    const items = document.querySelectorAll('.menu-item');
+    const overlay = document.getElementById('main-menu-overlay');
+    const btnMainMenu = document.getElementById('btn-main-menu');
+
+    if (btnMainMenu) {
+        btnMainMenu.addEventListener('click', () => {
+            showMainMenu();
+        });
+    }
+
+    if (items.length === 0) return;
+
+    items.forEach((item, index) => {
+        item.addEventListener('mouseenter', () => {
+            updateMenuFocus(index);
+        });
+
+        item.addEventListener('click', () => {
+            const action = item.dataset.action;
+            executeMenuAction(action);
+        });
+    });
+
+    document.addEventListener('keydown', (e) => {
+        const dialogOverlay = document.getElementById('game-dialog-overlay');
+        // Se houver um diálogo (modal) aberto, não interfere
+        if (dialogOverlay && dialogOverlay.style.display === 'flex') {
+            return;
+        }
+
+        if (overlay && overlay.style.display !== 'none') {
+            const totalItems = document.querySelectorAll('.menu-item').length;
+
+            if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+                e.preventDefault();
+                updateMenuFocus((currentMenuIndex - 1 + totalItems) % totalItems);
+                if (window.soundManager) window.soundManager.play('bip');
+            } else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
+                e.preventDefault();
+                updateMenuFocus((currentMenuIndex + 1) % totalItems);
+                if (window.soundManager) window.soundManager.play('bip');
+            } else if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                const currentItem = document.querySelectorAll('.menu-item')[currentMenuIndex];
+                if (currentItem) {
+                    executeMenuAction(currentItem.dataset.action);
+                }
+            }
+        } else {
+            // Se estiver no jogo e apertar ESC, abre a tela inicial
+            if (e.key === 'Escape') {
+                showMainMenu();
+            }
+        }
+    });
+}
+
+function updateMenuFocus(index) {
+    const items = document.querySelectorAll('.menu-item');
+    items.forEach((item, i) => {
+        const arrow = item.querySelector('.menu-arrow');
+        if (i === index) {
+            item.classList.add('active');
+            if (arrow) arrow.innerHTML = '▶';
+        } else {
+            item.classList.remove('active');
+            if (arrow) arrow.innerHTML = '&nbsp;';
+        }
+    });
+    currentMenuIndex = index;
+}
+
+function executeMenuAction(action) {
+    if (window.soundManager) window.soundManager.play('bip');
+    switch (action) {
+        case 'start':
+            startNormalGame();
+            break;
+        case 'custom-seed':
+            if (typeof openCustomSeedPrompt === 'function') openCustomSeedPrompt();
+            break;
+        case 'settings':
+            if (typeof showSettingsDialog === 'function') showSettingsDialog();
+            break;
+        case 'help':
+            if (typeof showHelpDialog === 'function') showHelpDialog();
+            break;
+    }
+}
+
+function showMainMenu() {
+    if (typeof stopExecution === 'function') stopExecution();
+    const overlay = document.getElementById('main-menu-overlay');
+    if (overlay) overlay.style.display = 'flex';
+}
+
+function hideMainMenu() {
+    const overlay = document.getElementById('main-menu-overlay');
+    if (overlay) overlay.style.display = 'none';
+}
+
+function startNormalGame() {
+    hideMainMenu();
+    if (typeof gameState !== 'undefined') {
+        gameState.seed = null;
+    }
+    initGame();
+}
+
 // Inicialização
-initGame();
 setupNotebookEvents();
+setupMenuEvents();
+showMainMenu();

@@ -801,3 +801,95 @@ body {
     background: #c0c0c0;
     border: solid 3px black;
 }
+
+/* Botão do Menu Principal */
+.btn-main-menu {
+    position: absolute;
+    top: 15px;
+    left: 56px;
+    background: rgba(20, 20, 20, 0.8);
+    border: 2px solid #555;
+    color: #fff;
+    border-radius: 6px;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    z-index: 100;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+}
+
+.btn-main-menu:hover {
+    border-color: #fff;
+    transform: scale(1.1);
+}
+
+/* Overlay da Tela Inicial (Main Menu) */
+.menu-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(5, 8, 15, 0.94);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 450;
+    border-radius: inherit;
+    backdrop-filter: blur(4px);
+}
+
+.menu-container {
+    text-align: center;
+    color: #fff;
+    font-family: monospace;
+    user-select: none;
+}
+
+.menu-title {
+    font-size: 48px;
+    letter-spacing: 8px;
+    margin-bottom: 35px;
+    color: #00ffcc;
+    text-shadow: 0 0 14px rgba(0, 255, 204, 0.7), 3px 3px #000;
+}
+
+.menu-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.menu-item {
+    font-size: 20px;
+    padding: 8px 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    transition: color 0.1s, background-color 0.1s;
+    border-radius: 4px;
+    color: #aaaaaa;
+}
+
+.menu-item:hover, .menu-item.active {
+    color: #ffff00;
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.menu-arrow {
+    font-size: 18px;
+    width: 20px;
+    display: inline-block;
+    color: #ffff00;
+    text-align: center;
+}

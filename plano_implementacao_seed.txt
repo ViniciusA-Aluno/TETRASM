@@ -1,0 +1,218 @@
+Plano de Implementação: Seed Determinística para Geração de Alvo no Tetrasm
+
+Este documento detalha a implementação de um sistema de geração de alvos determinísticos (e cartas correspondentes) por meio de uma semente (Seed). A solução é autossuficiente (sem usar bibliotecas adicionais) e se integra diretamente à interface e fluxo de jogo existentes.
+
+---
+
+1. Visão Geral da Solução
+
+Para tornar a geração do alvo e das cartas determinística (reproduzível), substituiremos o uso direto de Math.random() por um Gerador de Números Pseudo-Aleatórios (PRNG) parametrizável. 
+
+A solução mais simples e compacta em JavaScript puro é usar o algoritmo Mulberry32, que aceita uma semente numérica de 32 bits e retorna valores uniformes no intervalo [0, 1). Como o usuário digitará a seed em texto (ex: "12345" ou "fase_facil"), usaremos um algoritmo de hash simples para converter strings em inteiros de 32 bits.
+
+Fluxo:
+Usuário insere Seed na UI -> Semente é guardada no gameState -> initGame é executado -> Converter String para Hash Inteiro de 32 bits -> Inicializar Gerador Mulberry32 com o Hash -> Gerar Cartas Determinísticas -> Gerar Alvo Solúvel Determinístico -> Renderizar Nível Idêntico.
+
+---
+
+2. Passo a Passo Técnico
+
+Passo 2.1: Algoritmos do PRNG (em game.js)
+
+Adicionaremos duas funções utilitárias ao final do arquivo game.js:
+
+// Converte uma string ou número em um hash inteiro de 32 bits
+function hashCode(str) {
+    let hash = 0;
+    const s = String(str);
+    for (let i = 0; i < s.length; i++) {
+        hash = (hash << 5) - hash + s.charCodeAt(i);
+        hash |= 0; // Converte para inteiro de 32 bits
+    }
+    return hash;
+}
+
+// Gerador de números pseudo-aleatórios Mulberry32
+function mulberry32(seedInt) {
+    return function() {
+        let t = seedInt += 0x6D2B79F5;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    }
+}
+
+
+Passo 2.2: Atualização do gameState (em game.js)
+
+Incluiremos uma chave seed no objeto de estado do jogo. Se o jogador não escolher uma, uma semente aleatória de 6 dígitos será gerada para que o jogo sempre exiba uma semente compartilhável.
+
+--- game.js
+ const gameState = {
+     cards: [null, null, null, null],
+     accA: null,
+     accB: null,
+     stackP: [],
+     regR0: null,
+     target: null,
+     hasWon: false,
+     seed: null
+ };
+
+
+Passo 2.3: Atualização das Funções Geradoras (em game.js)
+
+Adaptamos generateRandomMatrix e generateSolvableTarget para aceitarem uma função geradora customizada rand (que por padrão cai de volta para Math.random caso não seja informada).
+
+--- game.js
+function generateRandomMatrix(valueForFilled = 1, rand = Math.random) {
+    const matrix = [];
+    for (let r = 0; r < GRID_SIZE; r++) {
+        const row = [];
+        for (let c = 0; c < GRID_SIZE; c++) {
+            row.push(rand() < 0.4 ? valueForFilled : 0);
+        }
+        matrix.push(row);
+    }
+    return matrix;
+}
+
+E no gerador de alvo solúvel:
+
+function generateSolvableTarget(rand = Math.random) {
+    const minOp = 2;
+    const maxOp = 4;
+    const initialCard = Math.floor(rand() * NUM_CARDS);
+ 
+    let answer = '';
+    answer += 'Answer (for cheaters and devs):\nMOV A, C' + initialCard + '\n'; // COLA
+ 
+    let target = copyMatrix(gameState.cards[initialCard]);
+    
+    const numOps = minOp + Math.floor(rand() * maxOp);
+    for (let i = 0; i < numOps; i++) {
+        const op = ['OR', 'AND', 'XOR', 'NOT'][Math.floor(rand() * 4)];
+ 
+        nextCard = Math.floor(rand() * NUM_CARDS);
+        const otherCard = gameState.cards[nextCard];
+        ...
+
+
+Passo 2.4: Atualização da Inicialização do Jogo (em script.js)
+
+Na função initGame(), instanciamos o gerador determinístico a partir do hash da semente e o repassamos para a geração das cartas e do alvo.
+
+--- script.js
+function initGame() {
+    // Se não houver semente especificada, gera uma semente aleatória numérica para exibição
+    if (!gameState.seed) {
+        gameState.seed = String(Math.floor(100000 + Math.random() * 900000));
+    }
+
+    // Instancia o PRNG baseado na semente ativa
+    const rand = mulberry32(hashCode(gameState.seed));
+
+    for (let i = 0; i < NUM_CARDS; i++) {
+        gameState.cards[i] = generateRandomMatrix(i + 1, rand);
+    }
+    
+    gameState.regR0 = null;
+    gameState.accA = null;
+    gameState.accB = null;
+    gameState.stackP = [];
+    gameState.hasWon = false;
+    
+    // O alvo é gerado usando a mesma sequência do PRNG
+    gameState.target = generateSolvableTarget(rand);
+    
+    saveInitialState();
+    renderGame();
+}
+
+Nota: Para o botão "Novo Alvo" (btn-new-target que chama newTargetExecution), se o jogador clicar nele, queremos gerar um novo alvo aleatório. Para isso, limpamos a semente ativa (gameState.seed = null) logo antes de chamar initGame(). Assim, um nível completamente novo é gerado e uma nova semente aleatória é exibida.
+
+
+Passo 2.5: UI para Inserir e Visualizar a Seed (em dialog.js)
+
+Integramos um campo de input na janela de configurações existente acionada por btn-settings (⚙️). O usuário poderá visualizar a seed atual do mapa ou digitar uma personalizada.
+
+Substituiremos a função showSettingsDialog() em dialog.js para incluir o input da Seed e a lógica de atualização:
+
+--- dialog.js
+function showSettingsDialog() {
+    const currentVol = window.soundManager ? Math.round(window.soundManager.getVolume() * 100) : 100;
+    
+    const bodyHtml = `
+        <div class="win95-content-box">
+            <div class="settings-control win95-inset-panel">
+                <label for="volume-slider" style="display: block; font-weight: bold; margin-bottom: 4px;">Volume do Som</label>
+                <div class="slider-row" style="display: flex; align-items: center; gap: 8px;">
+                    <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="${currentVol / 100}">
+                    <span id="volume-value" style="font-family: monospace; min-width: 45px; font-weight: bold; color: #000;">${currentVol}%</span>
+                </div>
+            </div>
+            
+            <div class="settings-control win95-inset-panel" style="margin-top: 12px; padding: 8px;">
+                <label for="seed-input" style="display: block; font-weight: bold; margin-bottom: 4px;">Semente do Mapa (Seed)</label>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" id="seed-input" value="${gameState.seed || ''}" 
+                           placeholder="Deixe em branco para aleatório" 
+                           style="flex: 1; padding: 4px; font-family: monospace; border: 2px solid #7f7f7f; border-right-color: #fff; border-bottom-color: #fff; background: #fff; color: #000;">
+                    <button id="btn-apply-seed" class="game-dialog-btn" style="padding: 2px 8px; font-size: 12px;">Aplicar</button>
+                </div>
+                <small style="color: #555; display: block; margin-top: 4px;">Compartilhe a semente ou digite uma para carregar um nível específico.</small>
+            </div>
+        </div>
+    `;
+
+    showDialog({
+        title: 'CONFIGURAÇÕES DO SISTEMA',
+        type: 'settings',
+        bodyHtml: bodyHtml,
+        buttons: [
+            {
+                text: 'Fechar',
+                className: 'btn-primary-settings',
+                onClick: () => closeDialog()
+            }
+        ]
+    });
+
+    setTimeout(() => {
+        // Evento de Volume
+        const slider = document.getElementById('volume-slider');
+        const valueSpan = document.getElementById('volume-value');
+        if (slider && valueSpan) {
+            slider.addEventListener('input', (e) => {
+                const val = parseFloat(e.target.value);
+                valueSpan.textContent = `${Math.round(val * 100)}%`;
+                if (window.soundManager) window.soundManager.setVolume(val);
+            });
+        }
+
+        // Evento da Seed
+        const seedInput = document.getElementById('seed-input');
+        const applyBtn = document.getElementById('btn-apply-seed');
+        if (seedInput && applyBtn) {
+            applyBtn.addEventListener('click', () => {
+                const cleanSeed = seedInput.value.trim();
+                gameState.seed = cleanSeed === '' ? null : cleanSeed;
+                closeDialog();
+                
+                // Reinicia o jogo gerando a nova fase determinística
+                if (typeof initGame === 'function') {
+                    initGame();
+                }
+            });
+        }
+    }, 50);
+}
+
+---
+
+3. Benefícios Dessa Abordagem
+
+1. Sem Dependências: Sem arquivos npm, importações externas ou bibliotecas adicionais. Tudo roda nativamente no navegador.
+2. Determinismo Completo: Tanto o gerador de cartas quanto o de alvos usam a mesma semente na ordem correta, garantindo que o jogo inteiro seja 100% reproduzível.
+3. Simplicidade Extrema: Mulberry32 consome apenas ~5 linhas de código matemático limpo.
+4. UX Agradável (Estilo Retrô Windows 95): A semente é configurada de forma natural dentro do diálogo de engrenagem (btn-settings), mantendo a estética e comportamento originais do jogo.

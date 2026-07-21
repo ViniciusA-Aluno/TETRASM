@@ -10,8 +10,31 @@
     <div id="app-layout">
         <div></div>
         <div id="game-container">
-            <!-- Botão de Configurações no canto do monitor -->
+            <!-- Botões de Controle no canto do monitor -->
             <button id="btn-settings" class="btn-settings" title="Configurações do Sistema">⚙️</button>
+            <button id="btn-main-menu" class="btn-main-menu" title="Menu Principal">🏠</button>
+
+            <!-- Tela Inicial (Main Menu) -->
+            <div id="main-menu-overlay" class="menu-overlay">
+                <div class="menu-container">
+                    <h1 class="menu-title">TETRASM</h1>
+                    
+                    <ul id="menu-options-list" class="menu-list">
+                        <li class="menu-item active" data-action="start">
+                            <span class="menu-arrow">▶</span> Iniciar Partida
+                        </li>
+                        <li class="menu-item" data-action="custom-seed">
+                            <span class="menu-arrow">&nbsp;</span> Partida Personalizada
+                        </li>
+                        <li class="menu-item" data-action="settings">
+                            <span class="menu-arrow">&nbsp;</span> Configurações
+                        </li>
+                        <li class="menu-item" data-action="help">
+                            <span class="menu-arrow">&nbsp;</span> Ajuda
+                        </li>
+                    </ul>
+                </div>
+            </div>
 
             <!-- Barra Superior (Registradores) -->
             <div id="registers-container">
