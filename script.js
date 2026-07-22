@@ -396,6 +396,9 @@ function startNormalGame() {
         gameState.seed = null;
     }
     initGame();
+    setTimeout(() => {
+        if (window.soundManager) window.soundManager.play('newgame');
+    }, 300);
 }
 
 // Inicialização
