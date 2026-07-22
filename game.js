@@ -67,62 +67,98 @@ function createEmptyMatrix() {
     return matrix;
 }
 
+function matrixToKey(matrix) {
+    if (!matrix) return '';
+    return matrix.flat().map(cell => (cell > 0 ? '1' : '0')).join('');
+}
+
 function generateSolvableTarget() {
     const minOp = 2;
     const maxOp = 4;
-    const initialCard = Math.floor(Math.random() * NUM_CARDS);
 
-    let answer = '';
-    answer += 'Answer (for cheaters and devs):\nMOV A, C' + initialCard + '\n'; // COLA
-
-    let target = copyMatrix(gameState.cards[initialCard]);
-    
-    const numOps = minOp + Math.floor(Math.random() * maxOp);
-    for (let i = 0; i < numOps; i++) {
-        const op = ['OR', 'AND', 'XOR', 'NOT'][Math.floor(Math.random() * 4)];
-
-        nextCard = Math.floor(Math.random() * NUM_CARDS);
-        const otherCard = gameState.cards[nextCard];
-
-        let nextTarget = createEmptyMatrix();
-        if (op === 'NOT') {
-            for (let r = 0; r < GRID_SIZE; r++) {
-                for (let c = 0; c < GRID_SIZE; c++) {
-                    nextTarget[r][c] = target[r][c] > 0 ? 0 : 1;
-                }
-            }
-        } else {
-            for (let r = 0; r < GRID_SIZE; r++) {
-                for (let c = 0; c < GRID_SIZE; c++) {
-                    const valSelf = target[r][c] > 0;
-                    const valOther = otherCard[r][c] > 0;
-                    let active = false;
-                    if (op === 'OR') active = valSelf || valOther;
-                    else if (op === 'AND') active = valSelf && valOther;
-                    else if (op === 'XOR') active = valSelf !== valOther;
-                    
-                    nextTarget[r][c] = active ? 1 : 0;
-                }
-            }
-        }
+    for (let attempt = 0; attempt < 20; attempt++) {
+        const visitedKeys = new Set();
         
-        const filledCount = nextTarget.flat().filter(x => x > 0).length;
-        if (filledCount > 1 && filledCount < 15) {
-            target = nextTarget;
-            
-            answer += op === 'NOT'? op + ' A\n': op + ' A, C' + nextCard + '\n'; // COLA
-        }
-    }
-    answer += 'MOV R0, A\nSYSCALL';
-    console.log(answer);
-    
-    for (let r = 0; r < GRID_SIZE; r++) {
-        for (let c = 0; c < GRID_SIZE; c++) {
-            if (target[r][c] > 0) {
-                target[r][c] = 6;
+        // Adiciona as chaves de todas as cartas iniciais para impedir alvos idênticos a qualquer carta existente
+        for (let i = 0; i < NUM_CARDS; i++) {
+            if (gameState.cards[i]) {
+                visitedKeys.add(matrixToKey(gameState.cards[i]));
             }
         }
+
+        const initialCard = Math.floor(Math.random() * NUM_CARDS);
+        let target = copyMatrix(gameState.cards[initialCard]);
+        visitedKeys.add(matrixToKey(target));
+
+        let answer = 'Answer (for cheaters and devs):\nMOV A, C' + initialCard + '\n'; // COLA
+        
+        const targetOpsCount = minOp + Math.floor(Math.random() * (maxOp - minOp + 1));
+        let successfulOps = 0;
+
+        for (let i = 0; i < targetOpsCount; i++) {
+            let opSuccess = false;
+            
+            for (let retry = 0; retry < 30; retry++) {
+                const op = ['OR', 'AND', 'XOR', 'NOT'][Math.floor(Math.random() * 4)];
+                const nextCardIndex = Math.floor(Math.random() * NUM_CARDS);
+                const otherCard = gameState.cards[nextCardIndex];
+
+                let nextTarget = createEmptyMatrix();
+                if (op === 'NOT') {
+                    for (let r = 0; r < GRID_SIZE; r++) {
+                        for (let c = 0; c < GRID_SIZE; c++) {
+                            nextTarget[r][c] = target[r][c] > 0 ? 0 : 1;
+                        }
+                    }
+                } else {
+                    for (let r = 0; r < GRID_SIZE; r++) {
+                        for (let c = 0; c < GRID_SIZE; c++) {
+                            const valSelf = target[r][c] > 0;
+                            const valOther = otherCard[r][c] > 0;
+                            let active = false;
+                            if (op === 'OR') active = valSelf || valOther;
+                            else if (op === 'AND') active = valSelf && valOther;
+                            else if (op === 'XOR') active = valSelf !== valOther;
+                            
+                            nextTarget[r][c] = active ? 1 : 0;
+                        }
+                    }
+                }
+
+                const key = matrixToKey(nextTarget);
+                const filledCount = nextTarget.flat().filter(x => x > 0).length;
+
+                // Aceita o passo somente se produzir uma matriz válida que NUNCA foi vista antes
+                if (filledCount > 1 && filledCount < 15 && !visitedKeys.has(key)) {
+                    visitedKeys.add(key);
+                    target = nextTarget;
+                    answer += op === 'NOT' ? `${op} A\n` : `${op} A, C${nextCardIndex}\n`;
+                    opSuccess = true;
+                    successfulOps++;
+                    break;
+                }
+            }
+
+            if (!opSuccess && successfulOps >= minOp) {
+                break;
+            }
+        }
+
+        if (successfulOps >= minOp) {
+            answer += 'MOV R0, A\nSYSCALL';
+            console.log(answer);
+
+            for (let r = 0; r < GRID_SIZE; r++) {
+                for (let c = 0; r < GRID_SIZE && c < GRID_SIZE; c++) {
+                    if (target[r][c] > 0) {
+                        target[r][c] = 6;
+                    }
+                }
+            }
+            return target;
+        }
     }
+
     return target;
 }
 
