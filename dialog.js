@@ -2,6 +2,7 @@ function closeDialog() {
     const overlay = document.getElementById('game-dialog-overlay');
     if (overlay) {
         overlay.style.display = 'none';
+        document.body.classList.remove('modal-open');
     }
 }
 
@@ -38,6 +39,7 @@ function showDialog({ title, type = 'info', bodyHtml = '', buttons = [] }) {
     });
 
     overlay.style.display = 'flex';
+    document.body.classList.add('modal-open');
 }
 
 function showVictoryDialog(onNextLevel) {

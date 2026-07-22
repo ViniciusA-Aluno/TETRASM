@@ -343,6 +343,11 @@ body {
     transition: left 0.3s ease-in-out;
 }
 
+body.modal-open #notebook-panel {
+    pointer-events: none;
+    opacity: 0.6;
+}
+
 #notebook-panel.left-side {
     order: -1;
 }
@@ -836,7 +841,6 @@ body {
     width: 100%;
     height: 100%;
     background-color: rgba(5, 8, 15, 0.94);
-    display: flex;
     justify-content: center;
     align-items: center;
     z-index: 450;
@@ -852,7 +856,8 @@ body {
 }
 
 .menu-title {
-    font-size: 48px;
+    font-family: 'Nabla', 'ui-monospace';
+    font-size: 80px;
     letter-spacing: 8px;
     margin-bottom: 35px;
     color: #00ffcc;
