@@ -98,11 +98,22 @@ function showSettingsDialog() {
     const bodyHtml = `
         <div class="win95-content-box">
             <div class="settings-control win95-inset-panel">
-                <label for="volume-slider">Volume do Som</label>
-                <div class="slider-row">
+                <label for="volume-slider" style="display: block; font-weight: bold; margin-bottom: 4px;">Volume do Som</label>
+                <div class="slider-row" style="display: flex; align-items: center; gap: 8px;">
                     <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="${currentVol / 100}">
                     <span id="volume-value" style="font-family: monospace; min-width: 45px; font-weight: bold; color: #000;">${currentVol}%</span>
                 </div>
+            </div>
+            
+            <div class="settings-control win95-inset-panel" style="margin-top: 12px; padding: 8px;">
+                <label for="seed-input" style="display: block; font-weight: bold; margin-bottom: 4px; color: #000;">Semente do Mapa (Seed)</label>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" id="seed-input" value="${gameState.seed || ''}" 
+                           placeholder="Deixe em branco para aleatório" 
+                           style="flex: 1; padding: 4px; font-family: monospace; border: 2px solid #7f7f7f; border-right-color: #fff; border-bottom-color: #fff; background: #fff; color: #000;">
+                    <button id="btn-apply-seed" class="game-dialog-btn" style="padding: 2px 8px; font-size: 12px;">Aplicar</button>
+                </div>
+                <small style="color: #555; display: block; margin-top: 4px;">Compartilhe a semente ou digite uma para carregar um nível específico.</small>
             </div>
         </div>
     `;
@@ -120,7 +131,7 @@ function showSettingsDialog() {
         ]
     });
 
-    // Adiciona evento ao slider após renderizar
+    // Adiciona eventos após renderizar
     setTimeout(() => {
         const slider = document.getElementById('volume-slider');
         const valueSpan = document.getElementById('volume-value');
@@ -131,6 +142,19 @@ function showSettingsDialog() {
                 valueSpan.textContent = `${percent}%`;
                 if (window.soundManager) {
                     window.soundManager.setVolume(val);
+                }
+            });
+        }
+
+        const seedInput = document.getElementById('seed-input');
+        const applyBtn = document.getElementById('btn-apply-seed');
+        if (seedInput && applyBtn) {
+            applyBtn.addEventListener('click', () => {
+                const cleanSeed = seedInput.value.trim();
+                gameState.seed = cleanSeed === '' ? null : cleanSeed;
+                closeDialog();
+                if (typeof initGame === 'function') {
+                    initGame();
                 }
             });
         }

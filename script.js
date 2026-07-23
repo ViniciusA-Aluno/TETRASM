@@ -6,8 +6,14 @@ let helpOpen = false;
 let linesOfCode = [];
 
 function initGame() {
+    if (!gameState.seed) {
+        gameState.seed = String(Math.floor(100000 + Math.random() * 900000));
+    }
+
+    const rand = mulberry32(hashCode(gameState.seed));
+
     for (let i = 0; i < NUM_CARDS; i++) {
-        gameState.cards[i] = generateRandomMatrix(i + 1);
+        gameState.cards[i] = generateRandomMatrix(i + 1, rand);
     }
     gameState.regR0 = null;
     gameState.accA = null;
@@ -15,7 +21,7 @@ function initGame() {
     gameState.stackP = [];
     gameState.hasWon = false;
     
-    gameState.target = generateSolvableTarget();
+    gameState.target = generateSolvableTarget(rand);
     
     saveInitialState();
     renderGame();
@@ -186,6 +192,7 @@ function resetExecution() {
 
 function newTargetExecution() {
     stopExecution();
+    gameState.seed = null;
     initGame();
     if (window.soundManager) window.soundManager.play('newgame');
     updateStatus("Novo alvo e peças geradas", "success");
@@ -194,6 +201,7 @@ function newTargetExecution() {
 function showVictoryCelebration() {
     if (typeof showVictoryDialog === 'function') {
         showVictoryDialog(() => {
+            gameState.seed = null;
             initGame();
             if (window.soundManager) window.soundManager.play('newgame');
             updateStatus("Próxima fase iniciada!");

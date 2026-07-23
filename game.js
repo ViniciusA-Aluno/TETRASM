@@ -10,7 +10,8 @@ const gameState = {
     stackP: [],
     regR0: null,
     target: null,
-    hasWon: false
+    hasWon: false,
+    seed: null
 };
 
 let savedGameState = null;
@@ -28,27 +29,29 @@ function saveInitialState() {
         stackP: gameState.stackP.map(m => copyMatrix(m)),
         regR0: copyMatrix(gameState.regR0),
         target: copyMatrix(gameState.target),
-        hasWon: false
+        hasWon: false,
+        seed: gameState.seed
     };
 }
 
 function restoreInitialState() {
     if (!savedGameState) return;
     gameState.cards = savedGameState.cards.map(m => copyMatrix(m));
-    gameState.accA = copyMatrix(savedGameState.accA);
-    gameState.accB = copyMatrix(savedGameState.accB);
+    gameState.accA = savedGameState.accA ? copyMatrix(savedGameState.accA) : null;
+    gameState.accB = savedGameState.accB ? copyMatrix(savedGameState.accB) : null;
     gameState.stackP = savedGameState.stackP.map(m => copyMatrix(m));
-    gameState.regR0 = copyMatrix(savedGameState.regR0);
+    gameState.regR0 = savedGameState.regR0 ? copyMatrix(savedGameState.regR0) : null;
     gameState.target = copyMatrix(savedGameState.target);
     gameState.hasWon = false;
+    gameState.seed = savedGameState.seed;
 }
 
-function generateRandomMatrix(valueForFilled = 1) {
+function generateRandomMatrix(valueForFilled = 1, rand = Math.random) {
     const matrix = [];
     for (let r = 0; r < GRID_SIZE; r++) {
         const row = [];
         for (let c = 0; c < GRID_SIZE; c++) {
-            row.push(Math.random() < 0.4 ? valueForFilled : 0);
+            row.push(rand() < 0.4 ? valueForFilled : 0);
         }
         matrix.push(row);
     }
@@ -72,7 +75,7 @@ function matrixToKey(matrix) {
     return matrix.flat().map(cell => (cell > 0 ? '1' : '0')).join('');
 }
 
-function generateSolvableTarget() {
+function generateSolvableTarget(rand = Math.random) {
     const minOp = 2;
     const maxOp = 4;
 
@@ -86,21 +89,21 @@ function generateSolvableTarget() {
             }
         }
 
-        const initialCard = Math.floor(Math.random() * NUM_CARDS);
+        const initialCard = Math.floor(rand() * NUM_CARDS);
         let target = copyMatrix(gameState.cards[initialCard]);
         visitedKeys.add(matrixToKey(target));
 
         let answer = 'Answer (for cheaters and devs):\nMOV A, C' + initialCard + '\n'; // COLA
         
-        const targetOpsCount = minOp + Math.floor(Math.random() * (maxOp - minOp + 1));
+        const targetOpsCount = minOp + Math.floor(rand() * (maxOp - minOp + 1));
         let successfulOps = 0;
 
         for (let i = 0; i < targetOpsCount; i++) {
             let opSuccess = false;
             
             for (let retry = 0; retry < 30; retry++) {
-                const op = ['OR', 'AND', 'XOR', 'NOT'][Math.floor(Math.random() * 4)];
-                const nextCardIndex = Math.floor(Math.random() * NUM_CARDS);
+                const op = ['OR', 'AND', 'XOR', 'NOT'][Math.floor(rand() * 4)];
+                const nextCardIndex = Math.floor(rand() * NUM_CARDS);
                 const otherCard = gameState.cards[nextCardIndex];
 
                 let nextTarget = createEmptyMatrix();
@@ -390,4 +393,25 @@ function executeInstruction(parsed) {
         default:
             throw new Error(`Instrução desconhecida: ${parsed.op}`);
     }
+}
+
+// Converte uma string ou número em um hash inteiro de 32 bits
+function hashCode(str) {
+    let hash = 0;
+    const s = String(str);
+    for (let i = 0; i < s.length; i++) {
+        hash = (hash << 5) - hash + s.charCodeAt(i);
+        hash |= 0; // Converte para inteiro de 32 bits
+    }
+    return hash;
+}
+
+// Gerador de números pseudo-aleatórios Mulberry32
+function mulberry32(seedInt) {
+    return function() {
+        let t = seedInt += 0x6D2B79F5;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
 }
