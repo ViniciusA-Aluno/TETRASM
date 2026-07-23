@@ -576,12 +576,13 @@ body.modal-open #notebook-panel {
     position: absolute;
     top: 15px;
     left: 15px;
-    background: rgba(20, 20, 20, 0.8);
-    border: 2px solid #555;
-    color: #fff;
+    background-color: transparent;
+    background-image: url(assets/images/config_icon.png);
+    background-repeat: no-repeat;
+    background-size: cover;
     border-radius: 6px;
-    width: 34px;
-    height: 34px;
+    width: 50px;
+    height: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -589,7 +590,7 @@ body.modal-open #notebook-panel {
     font-size: 16px;
     z-index: 100;
     transition: all 0.2s ease;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+    box-shadow: 0 4px 8px rgba(0, 0, 0,0.5);
 }
 
 .btn-settings:hover {
@@ -625,7 +626,7 @@ body.modal-open #notebook-panel {
     border-radius: 0; /* Quadrado clássico */
     width: 60%;
     min-height: 30%;
-    max-width: 440px;
+    max-width: 470px;
     padding: 3px; /* Borda externa fina */
     text-align: center;
     transform: scale(0.85);
@@ -811,13 +812,14 @@ body.modal-open #notebook-panel {
 .btn-main-menu {
     position: absolute;
     top: 15px;
-    left: 56px;
-    background: rgba(20, 20, 20, 0.8);
-    border: 2px solid #555;
-    color: #fff;
+    left: 69px;
+    background-color: transparent;
+    background-image: url(assets/images/home_icon.png);
+    background-repeat: no-repeat;
+    background-size: cover;
     border-radius: 6px;
-    width: 34px;
-    height: 34px;
+    width: 50px;
+    height: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -825,7 +827,7 @@ body.modal-open #notebook-panel {
     font-size: 16px;
     z-index: 100;
     transition: all 0.2s ease;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
 
 .btn-main-menu:hover {

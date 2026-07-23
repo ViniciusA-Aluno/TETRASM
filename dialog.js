@@ -224,11 +224,29 @@ function openCustomSeedPrompt() {
 }
 
 function showHelpDialog() {
-    const helpText = typeof getHelpSummary === 'function' ? getHelpSummary() : '';
+    let helpText = `➽ Olá Operador, bem vindo ao TETRASM!
+    Aqui você é o criador dos códigos para uma máquina que faz peças de Tetris.
+
+    ➽ Seu objetivo é escrever um programa Assembly que manipula, junta e muda as cartas iniciais, 
+    além gerenciar o espaço de trabalho para replicar a peça alvo.
+
+    ➽ Como Jogar?
+    Você escreve o Programa no Caderno de Comandos.
+    O comando SYSCALL compara a peça em R0 ao ALVO.
+    Se forem iguais, você ganha!
+
+    Para isso, você deve usar uma série de comandos e mover as peças entre:
+    Os Acumuladores (A e B)
+    O Registrador (R0)
+    e a Pilha (P)
+
+    Segue abaixo, uma lista de todos os comandos.
+
+    `
+    helpText += typeof getHelpSummary === 'function' ? getHelpSummary() : '';
     const bodyHtml = `
         <div class="win95-content-box">
-            <div class="win95-inset-panel" style="color: #000; font-family: monospace; font-size: 13px; white-space: pre-wrap; text-align: left; max-height: 240px; overflow-y: auto;">
-${helpText}
+            <div class="win95-inset-panel" style="color: #000; font-family: monospace; font-size: 14px; white-space: pre-line; text-align: left; max-height: 240px; overflow-y: auto;">${helpText}
             </div>
         </div>
     `;
